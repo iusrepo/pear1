@@ -1,10 +1,12 @@
 
 %define peardir %{_datadir}/pear
 
+%define xmlrpcver 1.4.4
+
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.5
-Release: 1
+Release: 2
 Epoch: 1
 License: PHP
 Group: System
@@ -12,10 +14,14 @@ URL: http://pear.php.net/package/PEAR
 Source0: install-pear-nozlib-%{version}.phar
 Source1: pear.sh
 Source2: relocate.php
-Source3: XML_RPC-1.4.4.tgz
+Source3: XML_RPC-%{xmlrpcver}.tgz
 BuildArchitectures: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: php >= 5.1.0-1
+Provides: php-pear(Archive_Tar) = 1.3.1 
+Provides: php-pear(Console_Getopt) = 1.2
+Provides: php-pear(PEAR_PEAR) = %{version}
+Provides: php-pear(XML_RPC) = %{xmlrpcver}
 
 %description
 PEAR is a framework and distribution system for reusable PHP
@@ -68,5 +74,8 @@ rm pear.conf
 %config %{_sysconfdir}/pear.conf
 
 %changelog
+* Thu Dec  1 2005 Joe Orton <jorton@redhat.com> 1:1.4.5-2
+- add virtual provides (#173806) 
+
 * Wed Nov 23 2005 Joe Orton <jorton@redhat.com> 1.4.5-1
 - initial build (Epoch: 1 to allow upgrade from php-pear-5.x)
