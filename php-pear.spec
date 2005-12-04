@@ -6,15 +6,17 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.5
-Release: 2
+Release: 3
 Epoch: 1
 License: PHP
 Group: System
 URL: http://pear.php.net/package/PEAR
 Source0: install-pear-nozlib-%{version}.phar
-Source1: pear.sh
 Source2: relocate.php
 Source3: XML_RPC-%{xmlrpcver}.tgz
+Source10: pear.sh
+Source11: pecl.sh
+Source12: peardev.sh
 BuildArchitectures: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: php >= 5.1.0-1
@@ -42,7 +44,9 @@ export PHP_PEAR_SYSCONF_DIR=`pwd`
                    %{SOURCE3}
 
 # Replace /usr/bin/pear with something simple:
-install -m 755 %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}/pear
+for f in pecl pear peardev; do 
+   install -m 755 $RPM_SOURCE_DIR/${f}.sh $RPM_BUILD_ROOT%{_bindir}/${f}
+done
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}
 
@@ -74,6 +78,9 @@ rm pear.conf
 %config %{_sysconfdir}/pear.conf
 
 %changelog
+* Sun Dec  4 2005 Joe Orton <jorton@redhat.com> 1:1.4.5-3
+- fix /usr/bin/{pecl,peardev} (#174882)
+
 * Thu Dec  1 2005 Joe Orton <jorton@redhat.com> 1:1.4.5-2
 - add virtual provides (#173806) 
 
