@@ -6,7 +6,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.5
-Release: 3
+Release: 4
 Epoch: 1
 License: PHP
 Group: System
@@ -22,7 +22,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: php >= 5.1.0-1
 Provides: php-pear(Archive_Tar) = 1.3.1 
 Provides: php-pear(Console_Getopt) = 1.2
-Provides: php-pear(PEAR_PEAR) = %{version}
+Provides: php-pear(PEAR) = %{version}
 Provides: php-pear(XML_RPC) = %{xmlrpcver}
 
 %description
@@ -36,6 +36,7 @@ components.  This package contains the basic PEAR components.
 rm -rf $RPM_BUILD_ROOT
 
 export PHP_PEAR_SYSCONF_DIR=`pwd`
+export PEAR_CONFIG_DEFAULT_DOC_DIR=$RPM_BUILD_ROOT%{_docdir}/php-pear-%{version}
 
 %{_bindir}/php -n -dshort_open_tag=0 -dsafe_mode=0 \
          -derror_reporting=E_ALL -ddetect_unicode=0 \
@@ -78,6 +79,9 @@ rm pear.conf
 %config %{_sysconfdir}/pear.conf
 
 %changelog
+* Tue Dec  6 2005 Joe Orton <jorton@redhat.com> 1:1.4.5-4
+- fix virtual provide for PEAR package (#175074)
+
 * Sun Dec  4 2005 Joe Orton <jorton@redhat.com> 1:1.4.5-3
 - fix /usr/bin/{pecl,peardev} (#174882)
 
