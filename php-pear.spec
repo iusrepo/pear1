@@ -6,7 +6,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.5
-Release: 4
+Release: 4.1
 Epoch: 1
 License: PHP
 Group: System
@@ -79,6 +79,9 @@ rm pear.conf
 %config %{_sysconfdir}/pear.conf
 
 %changelog
+* Fri Dec 09 2005 Jesse Keating <jkeating@redhat.com>
+- rebuilt
+
 * Tue Dec  6 2005 Joe Orton <jorton@redhat.com> 1:1.4.5-4
 - fix virtual provide for PEAR package (#175074)
 
