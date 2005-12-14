@@ -6,17 +6,18 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.5
-Release: 4.1
+Release: 5
 Epoch: 1
 License: PHP
 Group: System
 URL: http://pear.php.net/package/PEAR
 Source0: install-pear-nozlib-%{version}.phar
 Source2: relocate.php
-Source3: XML_RPC-%{xmlrpcver}.tgz
+Source3: strip.php
 Source10: pear.sh
 Source11: pecl.sh
 Source12: peardev.sh
+Source20: XML_RPC-%{xmlrpcver}.tgz
 BuildArchitectures: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: php >= 5.1.0-1
@@ -36,15 +37,15 @@ components.  This package contains the basic PEAR components.
 rm -rf $RPM_BUILD_ROOT
 
 export PHP_PEAR_SYSCONF_DIR=`pwd`
-export PEAR_CONFIG_DEFAULT_DOC_DIR=$RPM_BUILD_ROOT%{_docdir}/php-pear-%{version}
+export PHP_PEAR_SIG_KEYDIR=/etc/pearkeys
 
 %{_bindir}/php -n -dshort_open_tag=0 -dsafe_mode=0 \
          -derror_reporting=E_ALL -ddetect_unicode=0 \
-        %{SOURCE0} -d $RPM_BUILD_ROOT%{peardir}\
-                   -b $RPM_BUILD_ROOT%{_bindir} \
-                   %{SOURCE3}
+      %{SOURCE0} -d $RPM_BUILD_ROOT%{peardir} \
+                 -b $RPM_BUILD_ROOT%{_bindir} \
+                 %{SOURCE20}
 
-# Replace /usr/bin/pear with something simple:
+# Replace /usr/bin/* with simple scripts:
 for f in pecl pear peardev; do 
    install -m 755 $RPM_SOURCE_DIR/${f}.sh $RPM_BUILD_ROOT%{_bindir}/${f}
 done
@@ -57,7 +58,9 @@ sed -si "s,$RPM_BUILD_ROOT,,g" \
          $RPM_BUILD_ROOT%{peardir}/*/*.php \
          $RPM_BUILD_ROOT%{peardir}/*/*/*.php
 
-%{_bindir}/php -n %{SOURCE2} pear.conf $RPM_BUILD_ROOT > $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf
+# Sanitize the pear.conf
+%{_bindir}/php -n %{SOURCE2} pear.conf $RPM_BUILD_ROOT > new-pear.conf
+%{_bindir}/php -n %{SOURCE3} new-pear.conf ext_dir > $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf
 
 for f in $RPM_BUILD_ROOT%{peardir}/.registry/*.reg; do
    %{_bindir}/php -n %{SOURCE2} ${f} $RPM_BUILD_ROOT > ${f}.new
@@ -65,8 +68,9 @@ for f in $RPM_BUILD_ROOT%{peardir}/.registry/*.reg; do
 done
 
 %check
-# Check that no buildroot-relative paths are left in the pear.conf
+# Check that no buildroot-relative or arch-specific paths are left in the pear.conf
 grep $RPM_BUILD_ROOT $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
+grep %{_libdir} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -79,6 +83,10 @@ rm pear.conf
 %config %{_sysconfdir}/pear.conf
 
 %changelog
+* Wed Dec 14 2005 Joe Orton <jorton@redhat.com> 1:1.4.5-5
+- set default sig_keydir to /etc/pearkeys
+- remove ext_dir setting from /etc/pear.conf (#175673)
+
 * Fri Dec 09 2005 Jesse Keating <jkeating@redhat.com>
 - rebuilt
 
