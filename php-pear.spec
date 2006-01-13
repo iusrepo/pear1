@@ -6,7 +6,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.5
-Release: 5
+Release: 6
 Epoch: 1
 License: PHP
 Group: System
@@ -18,6 +18,10 @@ Source10: pear.sh
 Source11: pecl.sh
 Source12: peardev.sh
 Source20: XML_RPC-%{xmlrpcver}.tgz
+Patch0: php-pear-1.4.5-template-fixes.patch
+Patch1: php-pear-1.4.5-template-postun.patch
+Patch2: php-pear-1.4.5-makerpm-cleanup.patch
+Patch3: php-pear-1.4.5-makerpm-rh-namingconvs.patch
 BuildArchitectures: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: php >= 5.1.0-1
@@ -44,6 +48,13 @@ export PHP_PEAR_SIG_KEYDIR=/etc/pearkeys
       %{SOURCE0} -d $RPM_BUILD_ROOT%{peardir} \
                  -b $RPM_BUILD_ROOT%{_bindir} \
                  %{SOURCE20}
+
+pushd %{buildroot}%{peardir}
+%{__patch} -p0 data/PEAR/template.spec %{PATCH0}
+%{__patch} -p1 data/PEAR/template.spec %{PATCH1}
+%{__patch} -p0 < %{PATCH2}
+%{__patch} -p0 < %{PATCH3}
+popd
 
 # Replace /usr/bin/* with simple scripts:
 for f in pecl pear peardev; do 
@@ -83,6 +94,9 @@ rm pear.conf
 %config %{_sysconfdir}/pear.conf
 
 %changelog
+* Fri Dec 30 2005 Tim Jackson <tim@timj.co.uk> 1:1.4.5-6
+- Patches to fix "pear makerpm"
+
 * Wed Dec 14 2005 Joe Orton <jorton@redhat.com> 1:1.4.5-5
 - set default sig_keydir to /etc/pearkeys
 - remove ext_dir setting from /etc/pear.conf (#175673)
