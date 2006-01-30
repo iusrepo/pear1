@@ -5,8 +5,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.4.5
-Release: 6
+Version: 1.4.6
+Release: 1
 Epoch: 1
 License: PHP
 Group: System
@@ -29,6 +29,7 @@ Provides: php-pear(Archive_Tar) = 1.3.1
 Provides: php-pear(Console_Getopt) = 1.2
 Provides: php-pear(PEAR) = %{version}
 Provides: php-pear(XML_RPC) = %{xmlrpcver}
+Requires: php >= 5.1.0-1
 
 %description
 PEAR is a framework and distribution system for reusable PHP
@@ -94,6 +95,10 @@ rm pear.conf
 %config %{_sysconfdir}/pear.conf
 
 %changelog
+* Mon Jan 30 2006 Joe Orton <jorton@redhat.com> 1:1.4.6-1
+- update to 1.4.6
+- require php >= 5.1.0 (#178821)
+
 * Fri Dec 30 2005 Tim Jackson <tim@timj.co.uk> 1:1.4.5-6
 - Patches to fix "pear makerpm"
 
