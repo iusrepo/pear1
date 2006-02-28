@@ -6,7 +6,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.6
-Release: 1
+Release: 2
 Epoch: 1
 License: PHP
 Group: System
@@ -43,6 +43,7 @@ rm -rf $RPM_BUILD_ROOT
 
 export PHP_PEAR_SYSCONF_DIR=`pwd`
 export PHP_PEAR_SIG_KEYDIR=/etc/pearkeys
+export PHP_PEAR_CACHE_DIR=%{_localstatedir}/cache/php-pear
 
 %{_bindir}/php -n -dshort_open_tag=0 -dsafe_mode=0 \
          -derror_reporting=E_ALL -ddetect_unicode=0 \
@@ -62,7 +63,8 @@ for f in pecl pear peardev; do
    install -m 755 $RPM_SOURCE_DIR/${f}.sh $RPM_BUILD_ROOT%{_bindir}/${f}
 done
 
-install -d $RPM_BUILD_ROOT%{_sysconfdir}
+install -d $RPM_BUILD_ROOT%{_sysconfdir} \
+           $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear
 
 # Relocate everything:
 sed -si "s,$RPM_BUILD_ROOT,,g" \
@@ -83,6 +85,7 @@ done
 # Check that no buildroot-relative or arch-specific paths are left in the pear.conf
 grep $RPM_BUILD_ROOT $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 grep %{_libdir} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
+grep /tmp $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -93,8 +96,12 @@ rm pear.conf
 %{peardir}
 %{_bindir}/*
 %config %{_sysconfdir}/pear.conf
+%dir %{_localstatedir}/cache/php-pear
 
 %changelog
+* Tue Feb 28 2006 Joe Orton <jorton@redhat.com> 1:1.4.6-2
+- set cache_dir directory, own /var/cache/php-pear
+
 * Mon Jan 30 2006 Joe Orton <jorton@redhat.com> 1:1.4.6-1
 - update to 1.4.6
 - require php >= 5.1.0 (#178821)
