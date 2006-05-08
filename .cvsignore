@@ -1,3 +1,8 @@
 XML_RPC-1.4.4.tgz
 install-pear-nozlib-1.4.5.phar
 install-pear-nozlib-1.4.6.phar
+XML_RPC-1.4.8.tgz
+install-pear-nozlib-1.4.9.phar
+noarch
+clog
+*.src.rpm

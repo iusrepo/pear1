@@ -1,27 +1,26 @@
 
 %define peardir %{_datadir}/pear
 
-%define xmlrpcver 1.4.4
+%define xmlrpcver 1.4.8
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.4.6
+Version: 1.4.9
 Release: 2
 Epoch: 1
-License: PHP
+License: The PHP License 3.0
 Group: System
 URL: http://pear.php.net/package/PEAR
 Source0: install-pear-nozlib-%{version}.phar
 Source2: relocate.php
 Source3: strip.php
+Source4: LICENSE
 Source10: pear.sh
 Source11: pecl.sh
 Source12: peardev.sh
-Source20: XML_RPC-%{xmlrpcver}.tgz
-Patch0: php-pear-1.4.5-template-fixes.patch
-Patch1: php-pear-1.4.5-template-postun.patch
-Patch2: php-pear-1.4.5-makerpm-cleanup.patch
-Patch3: php-pear-1.4.5-makerpm-rh-namingconvs.patch
+Source20: http://pear.php.net/get/XML_RPC-%{xmlrpcver}.tgz
+Patch0: php-pear-1.4.8-template.patch
+Patch1: php-pear-1.4.8-package.patch
 BuildArchitectures: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: php >= 5.1.0-1
@@ -52,10 +51,8 @@ export PHP_PEAR_CACHE_DIR=%{_localstatedir}/cache/php-pear
                  %{SOURCE20}
 
 pushd %{buildroot}%{peardir}
-%{__patch} -p0 data/PEAR/template.spec %{PATCH0}
-%{__patch} -p1 data/PEAR/template.spec %{PATCH1}
-%{__patch} -p0 < %{PATCH2}
-%{__patch} -p0 < %{PATCH3}
+%{__patch} -p0 < %{PATCH0}
+%{__patch} -p0 < %{PATCH1}
 popd
 
 # Replace /usr/bin/* with simple scripts:
@@ -64,7 +61,8 @@ for f in pecl pear peardev; do
 done
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir} \
-           $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear
+           $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear \
+           $RPM_BUILD_ROOT%{peardir}/.pkgxml
 
 # Relocate everything:
 sed -si "s,$RPM_BUILD_ROOT,,g" \
@@ -80,6 +78,8 @@ for f in $RPM_BUILD_ROOT%{peardir}/.registry/*.reg; do
    %{_bindir}/php -n %{SOURCE2} ${f} $RPM_BUILD_ROOT > ${f}.new
    mv ${f}.new ${f}
 done
+
+install -m 644 -c $RPM_SOURCE_DIR/LICENSE .
 
 %check
 # Check that no buildroot-relative or arch-specific paths are left in the pear.conf
@@ -97,8 +97,15 @@ rm pear.conf
 %{_bindir}/*
 %config %{_sysconfdir}/pear.conf
 %dir %{_localstatedir}/cache/php-pear
+%doc LICENSE
 
 %changelog
+* Mon May  8 2006 Joe Orton <jorton@redhat.com> 1:1.4.9-2
+- update to 1.4.9 (thanks to Remi Collet, #183359)
+- package /usr/share/pear/.pkgxml (#190252)
+- update to XML_RPC-1.4.8
+- bundle the v3.0 LICENSE file
+
 * Tue Feb 28 2006 Joe Orton <jorton@redhat.com> 1:1.4.6-2
 - set cache_dir directory, own /var/cache/php-pear
 
