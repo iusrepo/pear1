@@ -6,7 +6,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.9
-Release: 2
+Release: 2.1
 Epoch: 1
 License: The PHP License 3.0
 Group: System
@@ -100,6 +100,9 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 1:1.4.9-2.1
+- rebuild
+
 * Mon May  8 2006 Joe Orton <jorton@redhat.com> 1:1.4.9-2
 - update to 1.4.9 (thanks to Remi Collet, #183359)
 - package /usr/share/pear/.pkgxml (#190252)
