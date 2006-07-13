@@ -63,7 +63,8 @@ done
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir} \
            $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear \
-           $RPM_BUILD_ROOT%{peardir}/.pkgxml
+           $RPM_BUILD_ROOT%{peardir}/.pkgxml \
+           $RPM_BUILD_ROOT%{_sysconfdir}/rpm
 
 # Relocate everything:
 sed -si "s,$RPM_BUILD_ROOT,,g" \
