@@ -6,7 +6,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.9
-Release: 2.1
+Release: 3
 Epoch: 1
 License: The PHP License 3.0
 Group: System
@@ -18,6 +18,7 @@ Source4: LICENSE
 Source10: pear.sh
 Source11: pecl.sh
 Source12: peardev.sh
+Source13: macros.pear
 Source20: http://pear.php.net/get/XML_RPC-%{xmlrpcver}.tgz
 Patch0: php-pear-1.4.8-template.patch
 Patch1: php-pear-1.4.8-package.patch
@@ -28,7 +29,7 @@ Provides: php-pear(Archive_Tar) = 1.3.1
 Provides: php-pear(Console_Getopt) = 1.2
 Provides: php-pear(PEAR) = %{version}
 Provides: php-pear(XML_RPC) = %{xmlrpcver}
-Requires: php >= 5.1.0-1
+Requires: php >= 5.1.0-1, php-cli
 
 %description
 PEAR is a framework and distribution system for reusable PHP
@@ -81,6 +82,9 @@ done
 
 install -m 644 -c $RPM_SOURCE_DIR/LICENSE .
 
+install -m 644 -c $RPM_SOURCE_DIR/macros.pear \
+           $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.pear        
+
 %check
 # Check that no buildroot-relative or arch-specific paths are left in the pear.conf
 grep $RPM_BUILD_ROOT $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
@@ -100,6 +104,10 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Thu Jul 13 2006 Joe Orton <jorton@redhat.com> 1:1.4.9-3
+- require php-cli
+- add /etc/rpm/macros.pear (Christopher Stone)
+
 * Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 1:1.4.9-2.1
 - rebuild
 
