@@ -1,12 +1,12 @@
 
 %define peardir %{_datadir}/pear
 
-%define xmlrpcver 1.4.8
+%define xmlrpcver 1.5.0
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.9
-Release: 3
+Release: 4
 Epoch: 1
 License: The PHP License 3.0
 Group: System
@@ -101,10 +101,15 @@ rm pear.conf
 %{peardir}
 %{_bindir}/*
 %config %{_sysconfdir}/pear.conf
+%config %{_sysconfdir}/rpm/macros.pear
 %dir %{_localstatedir}/cache/php-pear
 %doc LICENSE
 
 %changelog
+* Fri Jul 14 2006 Joe Orton <jorton@redhat.com> 1:1.4.9-4
+- update to XML_RPC-1.5.0
+- really package macros.pear
+
 * Thu Jul 13 2006 Joe Orton <jorton@redhat.com> 1:1.4.9-3
 - require php-cli
 - add /etc/rpm/macros.pear (Christopher Stone)
