@@ -1,14 +1,14 @@
 
 %define peardir %{_datadir}/pear
 
-%define xmlrpcver 1.5.0
+%define xmlrpcver 1.5.1
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.4.9
-Release: 4
+Version: 1.4.11
+Release: 2
 Epoch: 1
-License: The PHP License 3.0
+License: The PHP License v3.0
 Group: System
 URL: http://pear.php.net/package/PEAR
 Source0: install-pear-nozlib-%{version}.phar
@@ -43,7 +43,12 @@ rm -rf $RPM_BUILD_ROOT
 
 export PHP_PEAR_SYSCONF_DIR=`pwd`
 export PHP_PEAR_SIG_KEYDIR=/etc/pearkeys
-export PHP_PEAR_CACHE_DIR=%{_localstatedir}/cache/php-pear
+
+# 1.4.11 tries to write to the cache directory during installation
+# so it's not possible to set a sane default via the environment.
+# The ${PWD} bit will be stripped via relocate.php later.
+export PHP_PEAR_CACHE_DIR=${PWD}%{_localstatedir}/cache/php-pear
+export PHP_PEAR_TEMP_DIR=/var/tmp
 
 %{_bindir}/php -n -dshort_open_tag=0 -dsafe_mode=0 \
          -derror_reporting=E_ALL -ddetect_unicode=0 \
@@ -73,7 +78,8 @@ sed -si "s,$RPM_BUILD_ROOT,,g" \
          $RPM_BUILD_ROOT%{peardir}/*/*/*.php
 
 # Sanitize the pear.conf
-%{_bindir}/php -n %{SOURCE2} pear.conf $RPM_BUILD_ROOT > new-pear.conf
+%{_bindir}/php -n %{SOURCE2} pear.conf $RPM_BUILD_ROOT | 
+  %{_bindir}/php -n %{SOURCE2} php://stdin $PWD > new-pear.conf
 %{_bindir}/php -n %{SOURCE3} new-pear.conf ext_dir > $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf
 
 for f in $RPM_BUILD_ROOT%{peardir}/.registry/*.reg; do
@@ -90,7 +96,7 @@ install -m 644 -c $RPM_SOURCE_DIR/macros.pear \
 # Check that no buildroot-relative or arch-specific paths are left in the pear.conf
 grep $RPM_BUILD_ROOT $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 grep %{_libdir} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
-grep /tmp $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
+grep '"/tmp"' $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -106,6 +112,9 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Thu Jan  4 2007 Joe Orton <jorton@redhat.com> 1:1.4.11-2
+- update to 1.4.11
+
 * Fri Jul 14 2006 Joe Orton <jorton@redhat.com> 1:1.4.9-4
 - update to XML_RPC-1.5.0
 - really package macros.pear
