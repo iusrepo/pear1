@@ -6,7 +6,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.11
-Release: 2
+Release: 3
 Epoch: 1
 License: The PHP License v3.0
 Group: System
@@ -22,8 +22,8 @@ Source13: macros.pear
 Source20: http://pear.php.net/get/XML_RPC-%{xmlrpcver}.tgz
 Patch0: php-pear-1.4.8-template.patch
 Patch1: php-pear-1.4.8-package.patch
-BuildArchitectures: noarch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildArch: noarch
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: php >= 5.1.0-1
 Provides: php-pear(Archive_Tar) = 1.3.1 
 Provides: php-pear(Console_Getopt) = 1.2
@@ -93,10 +93,13 @@ install -m 644 -c $RPM_SOURCE_DIR/macros.pear \
            $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.pear        
 
 %check
-# Check that no buildroot-relative or arch-specific paths are left in the pear.conf
+# Check that no bogus paths are left in the configuration, or in
+# the generated registry files.
 grep $RPM_BUILD_ROOT $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 grep %{_libdir} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 grep '"/tmp"' $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
+grep /usr/local $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
+grep -rl $RPM_BUILD_ROOT $RPM_BUILD_ROOT && exit 1
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -112,6 +115,11 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Mon Feb  5 2007 Joe Orton <jorton@redhat.com> 1:1.4.11-3
+- use BuildArch not BuildArchitectures (#226925)
+- fix to use preferred BuildRoot (#226925)
+- strip more buildroot-relative paths from *.reg
+
 * Thu Jan  4 2007 Joe Orton <jorton@redhat.com> 1:1.4.11-2
 - update to 1.4.11
 
