@@ -24,7 +24,7 @@ Patch0: php-pear-1.4.8-template.patch
 Patch1: php-pear-1.4.8-package.patch
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: php >= 5.1.0-1
+BuildRequires: php >= 5.1.0-1, gnupg
 Provides: php-pear(Archive_Tar) = 1.3.1 
 Provides: php-pear(Console_Getopt) = 1.2
 Provides: php-pear(PEAR) = %{version}
@@ -43,6 +43,7 @@ rm -rf $RPM_BUILD_ROOT
 
 export PHP_PEAR_SYSCONF_DIR=`pwd`
 export PHP_PEAR_SIG_KEYDIR=/etc/pearkeys
+export PHP_PEAR_SIG_BIN=/usr/bin/gpg
 
 # 1.4.11 tries to write to the cache directory during installation
 # so it's not possible to set a sane default via the environment.
@@ -119,6 +120,7 @@ rm pear.conf
 - use BuildArch not BuildArchitectures (#226925)
 - fix to use preferred BuildRoot (#226925)
 - strip more buildroot-relative paths from *.reg
+- force correct gpg path in default pear.conf
 
 * Thu Jan  4 2007 Joe Orton <jorton@redhat.com> 1:1.4.11-2
 - update to 1.4.11
