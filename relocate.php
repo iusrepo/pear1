@@ -37,7 +37,9 @@ function relocate_array($array) {
     $result = array();
 
     foreach ($array as $key => $value) {
-        $key = relocate_string($key);
+        if (is_string($key)) {
+            $key = relocate_string($key);
+        }
         $result[$key] = relocate_value($value);
     }
 
