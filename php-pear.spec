@@ -3,13 +3,17 @@
 
 %define xmlrpcver 1.5.1
 
+# Upstream only make the latest .phar available via the following URL,
+# no archive of each version of the installer archives exists:
+#   http://pear.php.net/install-pear-nozlib.phar
+
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.4.11
-Release: 3
+Release: 4
 Epoch: 1
 License: The PHP License v3.0
-Group: System
+Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: install-pear-nozlib-%{version}.phar
 Source2: relocate.php
@@ -110,12 +114,15 @@ rm pear.conf
 %defattr(-,root,root,-)
 %{peardir}
 %{_bindir}/*
-%config %{_sysconfdir}/pear.conf
+%config(noreplace) %{_sysconfdir}/pear.conf
 %config %{_sysconfdir}/rpm/macros.pear
 %dir %{_localstatedir}/cache/php-pear
 %doc LICENSE
 
 %changelog
+* Mon Feb  5 2007 Joe Orton <jorton@redhat.com> 1:1.4.11-4
+- fix Group, mark pear.conf noreplace (#226295)
+
 * Mon Feb  5 2007 Joe Orton <jorton@redhat.com> 1:1.4.11-3
 - use BuildArch not BuildArchitectures (#226925)
 - fix to use preferred BuildRoot (#226925)
