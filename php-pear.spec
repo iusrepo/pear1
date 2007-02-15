@@ -9,8 +9,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.4.11
-Release: 4
+Version: 1.5.0
+Release: 1
 Epoch: 1
 License: The PHP License v3.0
 Group: Development/Languages
@@ -25,7 +25,6 @@ Source12: peardev.sh
 Source13: macros.pear
 Source20: http://pear.php.net/get/XML_RPC-%{xmlrpcver}.tgz
 Patch0: php-pear-1.4.8-template.patch
-Patch1: php-pear-1.4.8-package.patch
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: php >= 5.1.0-1, gnupg
@@ -63,7 +62,6 @@ export PHP_PEAR_TEMP_DIR=/var/tmp
 
 pushd %{buildroot}%{peardir}
 %{__patch} -p0 < %{PATCH0}
-%{__patch} -p0 < %{PATCH1}
 popd
 
 # Replace /usr/bin/* with simple scripts:
@@ -120,6 +118,9 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Thu Feb 15 2007 Joe Orton <jorton@redhat.com> 1:1.5.0-1
+- update to 1.5.0
+
 * Mon Feb  5 2007 Joe Orton <jorton@redhat.com> 1:1.4.11-4
 - fix Group, mark pear.conf noreplace (#226295)
 

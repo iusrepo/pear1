@@ -5,3 +5,4 @@ pear-1.4.11
 *.src.rpm
 noarch
 clog
+install-pear-nozlib-1.5.0RC2.phar
