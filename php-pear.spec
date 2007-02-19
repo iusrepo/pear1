@@ -10,7 +10,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.5.0
-Release: 1
+Release: 2
 Epoch: 1
 License: The PHP License v3.0
 Group: Development/Languages
@@ -24,13 +24,13 @@ Source11: pecl.sh
 Source12: peardev.sh
 Source13: macros.pear
 Source20: http://pear.php.net/get/XML_RPC-%{xmlrpcver}.tgz
-Patch0: php-pear-1.4.8-template.patch
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: php >= 5.1.0-1, gnupg
-Provides: php-pear(Archive_Tar) = 1.3.1 
-Provides: php-pear(Console_Getopt) = 1.2
+Provides: php-pear(Archive_Tar) = 1.3.2
+Provides: php-pear(Console_Getopt) = 1.2.1
 Provides: php-pear(PEAR) = %{version}
+Provides: php-pear(Structures_Graph) = 1.0.2
 Provides: php-pear(XML_RPC) = %{xmlrpcver}
 Requires: php >= 5.1.0-1, php-cli
 
@@ -59,10 +59,6 @@ export PHP_PEAR_TEMP_DIR=/var/tmp
       %{SOURCE0} -d $RPM_BUILD_ROOT%{peardir} \
                  -b $RPM_BUILD_ROOT%{_bindir} \
                  %{SOURCE20}
-
-pushd %{buildroot}%{peardir}
-%{__patch} -p0 < %{PATCH0}
-popd
 
 # Replace /usr/bin/* with simple scripts:
 for f in pecl pear peardev; do 
@@ -118,6 +114,10 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Mon Feb 19 2007 Joe Orton <jorton@redhat.com> 1:1.5.0-2
+- update builtin module provides (Remi Collet, #226295)
+- drop patch 0
+
 * Thu Feb 15 2007 Joe Orton <jorton@redhat.com> 1:1.5.0-1
 - update to 1.5.0
 
