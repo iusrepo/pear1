@@ -10,7 +10,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.5.0
-Release: 2
+Release: 3
 Epoch: 1
 License: The PHP License v3.0
 Group: Development/Languages
@@ -26,7 +26,7 @@ Source13: macros.pear
 Source20: http://pear.php.net/get/XML_RPC-%{xmlrpcver}.tgz
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: php >= 5.1.0-1, gnupg
+BuildRequires: php-cli >= 5.1.0-1, gnupg
 Provides: php-pear(Archive_Tar) = 1.3.2
 Provides: php-pear(Console_Getopt) = 1.2.1
 Provides: php-pear(PEAR) = %{version}
@@ -40,6 +40,9 @@ components.  This package contains the basic PEAR components.
 
 %prep
 %setup -cTn pear-%{version}
+
+%build
+# This is an empty build section.
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -114,6 +117,10 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Tue Mar  6 2007 Joe Orton <jorton@redhat.com> 1:1.5.0-3
+- add redundant build section (#226295)
+- BR php-cli not php (#226295)
+
 * Mon Feb 19 2007 Joe Orton <jorton@redhat.com> 1:1.5.0-2
 - update builtin module provides (Remi Collet, #226295)
 - drop patch 0
