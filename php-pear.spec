@@ -9,8 +9,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.5.0
-Release: 3
+Version: 1.5.4
+Release: 2
 Epoch: 1
 License: The PHP License v3.0
 Group: Development/Languages
@@ -117,6 +117,9 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Fri May 11 2007 Joe Orton <jorton@redhat.com> 1:1.5.4-2
+- update to 1.5.4
+
 * Tue Mar  6 2007 Joe Orton <jorton@redhat.com> 1:1.5.0-3
 - add redundant build section (#226295)
 - BR php-cli not php (#226295)
