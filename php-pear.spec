@@ -10,7 +10,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.5.4
-Release: 2
+Release: 3
 Epoch: 1
 License: The PHP License v3.0
 Group: Development/Languages
@@ -117,6 +117,9 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Mon Jul 16 2007 Joe Orton <jorton@redhat.com> 1:1.5.4-3
+- add pecl_{un,}install macros to macros.pear (from Remi)
+
 * Fri May 11 2007 Joe Orton <jorton@redhat.com> 1:1.5.4-2
 - update to 1.5.4
 

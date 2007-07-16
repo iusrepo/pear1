@@ -1,11 +1,11 @@
 #
-# Define full path to pear/pecl commands to be used in post/postun scriptlets
+# Define full path to pear/pecl commands to be used in scriptlets:
 #
 %__pear %{_bindir}/pear
 %__pecl %{_bindir}/pecl
 
 #
-# Define pear directories used in php-pear-* spec files
+# Define PEAR directories used in php-pear-* spec files
 #
 %pear_phpdir  %(%{__pear} config-get php_dir  2> /dev/null || echo undefined)
 %pear_docdir  %(%{__pear} config-get doc_dir  2> /dev/null || echo undefined)
@@ -13,7 +13,7 @@
 %pear_datadir %(%{__pear} config-get data_dir 2> /dev/null || echo undefined)
 
 #
-# Define pecl directories used in php-pecl-* spec files
+# Define PECL directories used in php-pecl-* spec files:
 #
 %pecl_phpdir  %(%{__pecl} config-get php_dir  2> /dev/null || echo undefined)
 %pecl_docdir  %(%{__pecl} config-get doc_dir  2> /dev/null || echo undefined)
@@ -21,7 +21,13 @@
 %pecl_datadir %(%{__pecl} config-get data_dir 2> /dev/null || echo undefined)
 
 #
-# Define XML directories to store package registration information
+# Define XML directories to store package registration information:
 #
 %pear_xmldir %{pear_phpdir}/.pkgxml
 %pecl_xmldir %{pecl_phpdir}/.pkgxml
+
+#
+# Define macros to be used in scriplets for php-pecl-* spec files:
+#
+%define pecl_install %{__pecl} install --nodeps --soft --force --register-only --nobuild
+%define pecl_uninstall %{__pecl} uninstall --nodeps --ignore-errors --register-only
