@@ -29,5 +29,5 @@
 #
 # Define macros to be used in scriplets for php-pecl-* spec files:
 #
-%define pecl_install %{__pecl} install --nodeps --soft --force --register-only --nobuild
-%define pecl_uninstall %{__pecl} uninstall --nodeps --ignore-errors --register-only
+%pecl_install %{__pecl} install --nodeps --soft --force --register-only --nobuild
+%pecl_uninstall %{__pecl} uninstall --nodeps --ignore-errors --register-only
