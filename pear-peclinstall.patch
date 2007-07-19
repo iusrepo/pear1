@@ -1,0 +1,24 @@
+To Avoid warnings when using pecl (un)install command
+
+See : http://pear.php.net/bugs/bug.php?id=11420
+
+--- /usr/share/pear/PEAR/Command/Install.php.orig	2007-06-24 13:22:19.000000000 +0200
++++ /usr/share/pear/PEAR/Command/Install.php	2007-06-24 13:30:28.000000000 +0200
+@@ -700,7 +700,7 @@
+                             break;
+                         }
+                     }
+-                    foreach ($binaries as $pinfo) {
++                    if (isset($binaries)) foreach ($binaries as $pinfo) {
+                         PEAR::staticPushErrorHandling(PEAR_ERROR_RETURN);
+                         $ret = $this->enableExtension(array($pinfo[0]), $param->getPackageType());
+                         PEAR::staticPopErrorHandling();
+@@ -941,7 +941,7 @@
+                             break;
+                         }
+                     }
+-                    foreach ($binaries as $pinfo) {
++                    if (isset($binaries)) foreach ($binaries as $pinfo) {
+                         PEAR::staticPushErrorHandling(PEAR_ERROR_RETURN);
+                         $ret = $this->disableExtension(array($pinfo[0]), $pkg->getPackageType());
+                         PEAR::staticPopErrorHandling();

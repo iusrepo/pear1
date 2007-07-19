@@ -1,6 +1,5 @@
+PEAR-1.6.1.tgz
 XML_RPC-1.5.1.tgz
-pear-1.5.4
-*.src.rpm
-noarch
-clog
-install-pear-nozlib-1.5.4.phar
+Archive_Tar-1.3.2.tgz
+Console_Getopt-1.2.3.tgz
+Structures_Graph-1.0.2.tgz

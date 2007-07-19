@@ -2,6 +2,9 @@
 %define peardir %{_datadir}/pear
 
 %define xmlrpcver 1.5.1
+%define getoptver 1.2.3
+%define arctarver 1.3.2
+%define structver 1.0.2
 
 # Upstream only make the latest .phar available via the following URL,
 # no archive of each version of the installer archives exists:
@@ -9,13 +12,15 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.5.4
-Release: 4
+Version: 1.6.1
+Release: 1%{?dist}
 Epoch: 1
-License: The PHP License v3.0
+License: PHP License
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
-Source0: install-pear-nozlib-%{version}.phar
+Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
+# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.29 -O install-pear.php
+Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
 Source4: LICENSE
@@ -24,13 +29,24 @@ Source11: pecl.sh
 Source12: peardev.sh
 Source13: macros.pear
 Source20: http://pear.php.net/get/XML_RPC-%{xmlrpcver}.tgz
+Source21: http://pear.php.net/get/Archive_Tar-%{arctarver}.tgz
+Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
+Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
+
+# To Avoid warnings when using pecl (un)install command
+# see  http://pear.php.net/bugs/bug.php?id=11420 
+Patch0: pear-peclinstall.patch
+# To avoid error when "system" download_dir is not writable for normal user.
+# see  http://pear.php.net/bugs/bug.php?id=11517
+Patch1: pear-downloaddir.patch
+
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: php-cli >= 5.1.0-1, gnupg
-Provides: php-pear(Archive_Tar) = 1.3.2
-Provides: php-pear(Console_Getopt) = 1.2.1
+BuildRequires: php-cli >= 5.1.0-1, php-xml, gnupg
+Provides: php-pear(Console_Getopt) = %{getoptver}
+Provides: php-pear(Archive_Tar) = %{arctarver}
 Provides: php-pear(PEAR) = %{version}
-Provides: php-pear(Structures_Graph) = 1.0.2
+Provides: php-pear(Structures_Graph) = %{structver}
 Provides: php-pear(XML_RPC) = %{xmlrpcver}
 Requires: php >= 5.1.0-1, php-cli
 
@@ -39,7 +55,14 @@ PEAR is a framework and distribution system for reusable PHP
 components.  This package contains the basic PEAR components.
 
 %prep
-%setup -cTn pear-%{version}
+%setup -cT
+
+# Create a usable PEAR directory (used by install-pear.php)
+for archive in %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23}
+do
+    tar xzf  $archive --strip-components 1
+done
+
 
 %build
 # This is an empty build section.
@@ -47,9 +70,10 @@ components.  This package contains the basic PEAR components.
 %install
 rm -rf $RPM_BUILD_ROOT
 
-export PHP_PEAR_SYSCONF_DIR=`pwd`
-export PHP_PEAR_SIG_KEYDIR=/etc/pearkeys
-export PHP_PEAR_SIG_BIN=/usr/bin/gpg
+export PHP_PEAR_SYSCONF_DIR=%{_sysconfdir}
+export PHP_PEAR_SIG_KEYDIR=%{_sysconfdir}/pearkeys
+export PHP_PEAR_SIG_BIN=%{_bindir}/gpg
+export PHP_PEAR_INSTALL_DIR=%{peardir}
 
 # 1.4.11 tries to write to the cache directory during installation
 # so it's not possible to set a sane default via the environment.
@@ -57,42 +81,40 @@ export PHP_PEAR_SIG_BIN=/usr/bin/gpg
 export PHP_PEAR_CACHE_DIR=${PWD}%{_localstatedir}/cache/php-pear
 export PHP_PEAR_TEMP_DIR=/var/tmp
 
-%{_bindir}/php -n -dshort_open_tag=0 -dsafe_mode=0 \
-         -derror_reporting=E_ALL -ddetect_unicode=0 \
-      %{SOURCE0} -d $RPM_BUILD_ROOT%{peardir} \
-                 -b $RPM_BUILD_ROOT%{_bindir} \
-                 %{SOURCE20}
-
-# Replace /usr/bin/* with simple scripts:
-for f in pecl pear peardev; do 
-   install -m 755 $RPM_SOURCE_DIR/${f}.sh $RPM_BUILD_ROOT%{_bindir}/${f}
-done
-
-install -d $RPM_BUILD_ROOT%{_sysconfdir} \
+install -d $RPM_BUILD_ROOT%{peardir} \
            $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear \
            $RPM_BUILD_ROOT%{peardir}/.pkgxml \
            $RPM_BUILD_ROOT%{_sysconfdir}/rpm
 
-# Relocate everything:
-sed -si "s,$RPM_BUILD_ROOT,,g" \
-         $RPM_BUILD_ROOT%{peardir}/*.php \
-         $RPM_BUILD_ROOT%{peardir}/*/*.php \
-         $RPM_BUILD_ROOT%{peardir}/*/*/*.php
+export INSTALL_ROOT=$RPM_BUILD_ROOT
+
+%{_bindir}/php -n -dshort_open_tag=0 -dsafe_mode=0 \
+         -derror_reporting=E_ALL -ddetect_unicode=0 \
+      %{SOURCE1} -d %{peardir} \
+                 -b %{_bindir} \
+                 %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE20}
+
+# Replace /usr/bin/* with simple scripts:
+install -m 755 %{SOURCE10} $RPM_BUILD_ROOT%{_bindir}/pear
+install -m 755 %{SOURCE11} $RPM_BUILD_ROOT%{_bindir}/pecl
+install -m 755 %{SOURCE12} $RPM_BUILD_ROOT%{_bindir}/peardev
 
 # Sanitize the pear.conf
-%{_bindir}/php -n %{SOURCE2} pear.conf $RPM_BUILD_ROOT | 
+%{_bindir}/php -n %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf $RPM_BUILD_ROOT | 
   %{_bindir}/php -n %{SOURCE2} php://stdin $PWD > new-pear.conf
 %{_bindir}/php -n %{SOURCE3} new-pear.conf ext_dir > $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf
 
-for f in $RPM_BUILD_ROOT%{peardir}/.registry/*.reg; do
-   %{_bindir}/php -n %{SOURCE2} ${f} $RPM_BUILD_ROOT > ${f}.new
-   mv ${f}.new ${f}
-done
+install -m 644 -c %{SOURCE4} LICENSE
 
-install -m 644 -c $RPM_SOURCE_DIR/LICENSE .
+install -m 644 -c %{SOURCE13} \
+           $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.pear     
 
-install -m 644 -c $RPM_SOURCE_DIR/macros.pear \
-           $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.pear        
+cd $RPM_BUILD_ROOT%{peardir} 
+patch -p4 <%{PATCH0}
+patch -p4 <%{PATCH1}
+
+# Why this file here ?
+rm -rf $RPM_BUILD_ROOT/.depdb* $RPM_BUILD_ROOT/.lock $RPM_BUILD_ROOT/.channels $RPM_BUILD_ROOT/.filemap
 
 %check
 # Check that no bogus paths are left in the configuration, or in
@@ -105,7 +127,7 @@ grep -rl $RPM_BUILD_ROOT $RPM_BUILD_ROOT && exit 1
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-rm pear.conf
+rm new-pear.conf
 
 %files
 %defattr(-,root,root,-)
@@ -117,6 +139,12 @@ rm pear.conf
 %doc LICENSE
 
 %changelog
+* Thu Jul 19 2007 Remi Collet <Fedora@FamilleCollet.com> 1:1.6.1-1
+- update to PEAR-1.6.1 and Console_Getopt-1.2.3
+
+* Thu Jul 19 2007 Remi Collet <Fedora@FamilleCollet.com> 1:1.5.4-5
+- new SPEC using install-pear.php instead of install-pear-nozlib-1.5.4.phar
+
 * Mon Jul 16 2007 Remi Collet <Fedora@FamilleCollet.com> 1:1.5.4-4
 - update macros.pear (without define)
 
