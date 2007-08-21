@@ -13,9 +13,9 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.6.1
-Release: 1%{?dist}
+Release: 2
 Epoch: 1
-License: PHP License
+License: PHP
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
@@ -88,7 +88,7 @@ install -d $RPM_BUILD_ROOT%{peardir} \
 
 export INSTALL_ROOT=$RPM_BUILD_ROOT
 
-%{_bindir}/php -n -dshort_open_tag=0 -dsafe_mode=0 \
+%{_bindir}/php -n -dmemory_limit=32M -dshort_open_tag=0 -dsafe_mode=0 \
          -derror_reporting=E_ALL -ddetect_unicode=0 \
       %{SOURCE1} -d %{peardir} \
                  -b %{_bindir} \
@@ -139,6 +139,9 @@ rm new-pear.conf
 %doc LICENSE
 
 %changelog
+* Tue Aug 21 2007 Joe Orton <jorton@redhat.com> 1:1.6.1-2
+- fix License
+
 * Thu Jul 19 2007 Remi Collet <Fedora@FamilleCollet.com> 1:1.6.1-1
 - update to PEAR-1.6.1 and Console_Getopt-1.2.3
 
