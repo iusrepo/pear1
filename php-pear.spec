@@ -12,8 +12,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.6.1
-Release: 2
+Version: 1.6.2
+Release: 1%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
@@ -32,13 +32,6 @@ Source20: http://pear.php.net/get/XML_RPC-%{xmlrpcver}.tgz
 Source21: http://pear.php.net/get/Archive_Tar-%{arctarver}.tgz
 Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
-
-# To Avoid warnings when using pecl (un)install command
-# see  http://pear.php.net/bugs/bug.php?id=11420 
-Patch0: pear-peclinstall.patch
-# To avoid error when "system" download_dir is not writable for normal user.
-# see  http://pear.php.net/bugs/bug.php?id=11517
-Patch1: pear-downloaddir.patch
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -63,6 +56,8 @@ do
     tar xzf  $archive --strip-components 1
 done
 
+# apply patches on used PEAR during install
+# -- no patch
 
 %build
 # This is an empty build section.
@@ -109,9 +104,9 @@ install -m 644 -c %{SOURCE4} LICENSE
 install -m 644 -c %{SOURCE13} \
            $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.pear     
 
+# apply patches on installed PEAR tree
 cd $RPM_BUILD_ROOT%{peardir} 
-patch -p4 <%{PATCH0}
-patch -p4 <%{PATCH1}
+# -- no patch
 
 # Why this file here ?
 rm -rf $RPM_BUILD_ROOT/.depdb* $RPM_BUILD_ROOT/.lock $RPM_BUILD_ROOT/.channels $RPM_BUILD_ROOT/.filemap
@@ -139,6 +134,11 @@ rm new-pear.conf
 %doc LICENSE
 
 %changelog
+* Sun Sep  9 2007 Remi Collet <Fedora@FamilleCollet.com> 1:1.6.2-1
+- update to 1.6.2
+- remove patches merged upstream
+- Fix : "pear install" hangs on non default channel (#283401)
+
 * Tue Aug 21 2007 Joe Orton <jorton@redhat.com> 1:1.6.1-2
 - fix License
 
