@@ -13,7 +13,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.6.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
@@ -41,7 +41,7 @@ Provides: php-pear(Archive_Tar) = %{arctarver}
 Provides: php-pear(PEAR) = %{version}
 Provides: php-pear(Structures_Graph) = %{structver}
 Provides: php-pear(XML_RPC) = %{xmlrpcver}
-Requires: php >= 5.1.0-1, php-cli
+Requires: php-cli >= 5.1.0-1
 
 %description
 PEAR is a framework and distribution system for reusable PHP
@@ -134,6 +134,9 @@ rm new-pear.conf
 %doc LICENSE
 
 %changelog
+* Thu Oct  4 2007 Joe Orton <jorton@redhat.com> 1:1.6.2-2
+- require php-cli not php
+
 * Sun Sep  9 2007 Remi Collet <Fedora@FamilleCollet.com> 1:1.6.2-1
 - update to 1.6.2
 - remove patches merged upstream
