@@ -9,7 +9,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.7.0
-Release: 1%{?dist}
+Release: 1%{?dist}.1
 Epoch: 1
 License: PHP
 Group: Development/Languages
