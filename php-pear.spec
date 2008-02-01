@@ -6,20 +6,16 @@
 %define arctarver 1.3.2
 %define structver 1.0.2
 
-# Upstream only make the latest .phar available via the following URL,
-# no archive of each version of the installer archives exists:
-#   http://pear.php.net/install-pear-nozlib.phar
-
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.6.2
-Release: 2%{?dist}
+Version: 1.7.0
+Release: 1%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
-# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.29 -O install-pear.php
+# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.30 -O install-pear.php
 Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
@@ -97,7 +93,10 @@ install -m 755 %{SOURCE12} $RPM_BUILD_ROOT%{_bindir}/peardev
 # Sanitize the pear.conf
 %{_bindir}/php -n %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf $RPM_BUILD_ROOT | 
   %{_bindir}/php -n %{SOURCE2} php://stdin $PWD > new-pear.conf
-%{_bindir}/php -n %{SOURCE3} new-pear.conf ext_dir > $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf
+%{_bindir}/php -n %{SOURCE3} new-pear.conf ext_dir |
+  %{_bindir}/php -n %{SOURCE3} php://stdin http_proxy > $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf
+
+%{_bindir}/php -r "print_r(unserialize(substr(file_get_contents('$RPM_BUILD_ROOT%{_sysconfdir}/pear.conf'),17)));"
 
 install -m 644 -c %{SOURCE4} LICENSE
 
@@ -131,9 +130,12 @@ rm new-pear.conf
 %config(noreplace) %{_sysconfdir}/pear.conf
 %config %{_sysconfdir}/rpm/macros.pear
 %dir %{_localstatedir}/cache/php-pear
-%doc LICENSE
+%doc LICENSE README
 
 %changelog
+* Fri Feb  1 2008 Remi Collet <Fedora@FamilleCollet.com> 1:1.7.0-1
+- update to 1.7.0
+
 * Thu Oct  4 2007 Joe Orton <jorton@redhat.com> 1:1.6.2-2
 - require php-cli not php
 
