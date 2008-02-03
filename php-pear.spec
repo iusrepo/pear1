@@ -8,8 +8,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.7.0
-Release: 1%{?dist}.1
+Version: 1.7.1
+Release: 1%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
@@ -49,7 +49,7 @@ components.  This package contains the basic PEAR components.
 # Create a usable PEAR directory (used by install-pear.php)
 for archive in %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23}
 do
-    tar xzf  $archive --strip-components 1
+    tar xzf  $archive --strip-components 1 || tar xzf  $archive --strip-path 1
 done
 
 # apply patches on used PEAR during install
@@ -133,6 +133,9 @@ rm new-pear.conf
 %doc LICENSE README
 
 %changelog
+* Sun Feb  3 2008 Remi Collet <Fedora@FamilleCollet.com> 1:1.7.1-1
+- update to 1.7.1
+
 * Fri Feb  1 2008 Remi Collet <Fedora@FamilleCollet.com> 1:1.7.0-1
 - update to 1.7.0
 
