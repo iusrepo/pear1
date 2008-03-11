@@ -1,6 +1,6 @@
 <?php
 
-/* $Id: install-pear.php,v 1.29 2007/05/31 03:51:08 cellog Exp $ */
+/* $Id: install-pear.php,v 1.31 2008/03/11 22:04:32 timj Exp $ */
 
 error_reporting(E_ALL);
 $pear_dir = dirname(__FILE__);
@@ -46,6 +46,9 @@ for ($i = 0; $i < sizeof($argv); $i++) {
     } elseif ($arg == '-b') {
         $bin_dir = $argv[$i+1];
         $i++;
+    } elseif ($arg == '-c') {
+       	$cfg_dir = $argv[$i+1];
+       	$i++;
     } elseif ($arg == '-p') {
         $php_bin = $argv[$i+1];
         $i++;
@@ -57,6 +60,11 @@ for ($i = 0; $i < sizeof($argv); $i++) {
 }
 
 $config = PEAR_Config::singleton();
+
+if (PEAR::isError($config)) {
+    $locs = PEAR_Config::getDefaultConfigFiles();
+    die("ERROR: One of $locs[user] or $locs[system] is corrupt, please remove them and try again");
+}
 
 // make sure we use only default values
 $config_layers = $config->getLayers();
@@ -74,6 +82,12 @@ if ($debug) {
 if (!empty($bin_dir)) {
     $config->set('bin_dir', $bin_dir, 'default');
 }
+
+// Config files
+if (!empty($cfg_dir)) {
+    $config->set('cfg_dir', $cfg_dir, 'default');
+}
+
 // User supplied a dir prefix
 if (!empty($with_dir)) {
     $ds = DIRECTORY_SEPARATOR;

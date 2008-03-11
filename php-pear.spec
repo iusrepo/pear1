@@ -9,13 +9,13 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.7.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
-# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.30 -O install-pear.php
+# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.31 -O install-pear.php
 Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
@@ -75,13 +75,15 @@ export PHP_PEAR_TEMP_DIR=/var/tmp
 install -d $RPM_BUILD_ROOT%{peardir} \
            $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear \
            $RPM_BUILD_ROOT%{peardir}/.pkgxml \
-           $RPM_BUILD_ROOT%{_sysconfdir}/rpm
+           $RPM_BUILD_ROOT%{_sysconfdir}/rpm \
+           $RPM_BUILD_ROOT%{_sysconfdir}/pear
 
 export INSTALL_ROOT=$RPM_BUILD_ROOT
 
 %{_bindir}/php -n -dmemory_limit=32M -dshort_open_tag=0 -dsafe_mode=0 \
          -derror_reporting=E_ALL -ddetect_unicode=0 \
       %{SOURCE1} -d %{peardir} \
+                 -c %{_sysconfdir}/pear \
                  -b %{_bindir} \
                  %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE20}
 
@@ -130,9 +132,15 @@ rm new-pear.conf
 %config(noreplace) %{_sysconfdir}/pear.conf
 %config %{_sysconfdir}/rpm/macros.pear
 %dir %{_localstatedir}/cache/php-pear
+%dir %{_sysconfdir}/pear
 %doc LICENSE README
 
 %changelog
+* Tue Mar 11 2008 Tim Jackson <rpm@timj.co.uk> 1:1.7.1-2
+- Set cfg_dir to be %{_sysconfdir}/pear (and own it)
+- Update install-pear.php script
+- Add %%pear_cfgdir and %%pear_wwwdir macros
+
 * Sun Feb  3 2008 Remi Collet <Fedora@FamilleCollet.com> 1:1.7.1-1
 - update to 1.7.1
 
