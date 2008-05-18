@@ -1,6 +1,6 @@
 <?php
 
-/* $Id: install-pear.php,v 1.31 2008/03/11 22:04:32 timj Exp $ */
+/* $Id: install-pear.php,v 1.32 2008/05/13 04:58:09 cellog Exp $ */
 
 error_reporting(E_ALL);
 $pear_dir = dirname(__FILE__);
@@ -94,7 +94,11 @@ if (!empty($with_dir)) {
     $config->set('php_dir', $with_dir, 'default');
     $config->set('doc_dir', $with_dir . $ds . 'doc', 'default');
     $config->set('data_dir', $with_dir . $ds . 'data', 'default');
+    $config->set('www_dir', $with_dir . $ds . 'htdocs', 'default');
     $config->set('test_dir', $with_dir . $ds . 'test', 'default');
+    if (!empty($cfg_dir)) {
+        $config->set('cfg_dir', $with_dir . $ds . 'cfg', 'default');
+    }
     if (!is_writable($config->get('cache_dir'))) {
         include_once 'System.php';
         $cdir = System::mktemp(array('-d', 'pear'));
