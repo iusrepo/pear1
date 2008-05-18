@@ -9,13 +9,13 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.7.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
-# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.32 -O install-pear.php
+# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.31 -O install-pear.php
 Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
@@ -136,6 +136,9 @@ rm new-pear.conf
 %doc LICENSE README
 
 %changelog
+* Sun May 18 2008 Remi Collet <Fedora@FamilleCollet.com> 1:1.7.2-2
+- revert to install-pear.php script 1.31 (for cfg_dir)
+
 * Sun May 18 2008 Remi Collet <Fedora@FamilleCollet.com> 1:1.7.2-1
 - update to 1.7.2
 - Update install-pear.php script (1.32)
