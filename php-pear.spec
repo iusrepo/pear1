@@ -9,7 +9,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.7.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
@@ -136,6 +136,9 @@ rm new-pear.conf
 %doc LICENSE README
 
 %changelog
+* Thu Feb 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.7.2-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
 * Sun May 18 2008 Remi Collet <Fedora@FamilleCollet.com> 1:1.7.2-2
 - revert to install-pear.php script 1.31 (for cfg_dir)
 
