@@ -1,8 +1,13 @@
 <?php
 
-/* $Id: install-pear.php,v 1.31 2008/03/11 22:04:32 timj Exp $ */
+/* $Id: install-pear.php,v 1.38 2009/04/20 04:32:22 cellog Exp $ */
 
-error_reporting(E_ALL);
+error_reporting(1803);
+
+if (ini_get('date.timezone') === '' && function_exists('date_default_timezone_set')) {
+    date_default_timezone_set('UTC');
+}
+
 $pear_dir = dirname(__FILE__);
 ini_set('include_path', '');
 if (function_exists('mb_internal_encoding')) {
@@ -38,8 +43,17 @@ for ($i = 0; $i < sizeof($argv); $i++) {
     if (ereg('package-(.*)\.xml$', $bn, $matches) ||
         ereg('([A-Za-z0-9_:]+)-.*\.(tar|tgz)$', $bn, $matches)) {
         $install_files[$matches[1]] = $arg;
+    } elseif ($arg == '-a') {
+        $cache_dir = $argv[$i+1];
+        $i++;
     } elseif ($arg == '--force') {
         $force = true;
+    } elseif ($arg == '-dp') {
+        $prefix = $argv[$i+1];
+        $i++;
+    } elseif ($arg == '-ds') {
+        $suffix = $argv[$i+1];
+        $i++;
     } elseif ($arg == '-d') {
         $with_dir = $argv[$i+1];
         $i++;
@@ -47,10 +61,19 @@ for ($i = 0; $i < sizeof($argv); $i++) {
         $bin_dir = $argv[$i+1];
         $i++;
     } elseif ($arg == '-c') {
-       	$cfg_dir = $argv[$i+1];
-       	$i++;
+        $cfg_dir = $argv[$i+1];
+        $i++;
+    } elseif ($arg == '-w') {
+        $www_dir = $argv[$i+1];
+        $i++;
     } elseif ($arg == '-p') {
         $php_bin = $argv[$i+1];
+        $i++;
+    } elseif ($arg == '-o') {
+        $download_dir = $argv[$i+1];
+        $i++;
+    } elseif ($arg == '-t') {
+        $temp_dir = $argv[$i+1];
         $i++;
     } elseif ($arg == '--debug') {
         $debug = 1;
@@ -83,9 +106,29 @@ if (!empty($bin_dir)) {
     $config->set('bin_dir', $bin_dir, 'default');
 }
 
+// Cache files
+if (!empty($cache_dir)) {
+    $config->set('cache_dir', $cache_dir, 'default');
+}
+
 // Config files
 if (!empty($cfg_dir)) {
     $config->set('cfg_dir', $cfg_dir, 'default');
+}
+
+// Web files
+if (!empty($www_dir)) {
+    $config->set('www_dir', $www_dir, 'default');
+}
+
+// Downloaded files
+if (!empty($download_dir)) {
+    $config->set('download_dir', $download_dir, 'default');
+}
+
+// Temporary files
+if (!empty($temp_dir)) {
+    $config->set('temp_dir', $temp_dir, 'default');
 }
 
 // User supplied a dir prefix
@@ -95,6 +138,12 @@ if (!empty($with_dir)) {
     $config->set('doc_dir', $with_dir . $ds . 'doc', 'default');
     $config->set('data_dir', $with_dir . $ds . 'data', 'default');
     $config->set('test_dir', $with_dir . $ds . 'test', 'default');
+    if (empty($www_dir)) {
+        $config->set('www_dir', $with_dir . $ds . 'htdocs', 'default');
+    }
+    if (empty($cfg_dir)) {
+        $config->set('cfg_dir', $with_dir . $ds . 'cfg', 'default');
+    }
     if (!is_writable($config->get('cache_dir'))) {
         include_once 'System.php';
         $cdir = System::mktemp(array('-d', 'pear'));
@@ -106,9 +155,32 @@ if (!empty($with_dir)) {
         $config->set('cache_dir', $cdir);
     }
 }
+
+// PHP executable
 if (!empty($php_bin)) {
     $config->set('php_bin', $php_bin);
 }
+
+// PHP prefix
+if (isset($prefix)) {
+    if ($prefix != 'a') {
+        if ($prefix[0] == 'a') {
+            $prefix = substr($prefix, 1);
+        }
+        $config->set('php_prefix', $prefix, 'system');
+    }
+}
+
+// PHP suffix
+if (isset($suffix)) {
+    if ($suffix != 'a') {
+        if ($suffix[0] == 'a') {
+            $suffix = substr($suffix, 1);
+        }
+        $config->set('php_suffix', $suffix, 'system');
+    }
+}
+
 /* Print PEAR Conf (useful for debuging do NOT REMOVE) */
 if ($debug) {
     sort($keys);

@@ -1,21 +1,22 @@
 
-%define peardir %{_datadir}/pear
+%global peardir %{_datadir}/pear
 
-%define xmlrpcver 1.5.1
-%define getoptver 1.2.3
-%define arctarver 1.3.2
-%define structver 1.0.2
+%global xmlrpcver 1.5.1
+%global getoptver 1.2.3
+%global arctarver 1.3.3
+%global structver 1.0.2
+%global xmlutil   1.2.1
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.7.2
-Release: 3%{?dist}
+Version: 1.8.1
+Release: 1%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
-# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.31 -O install-pear.php
+# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.39 -O install-pear.php
 Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
@@ -28,6 +29,7 @@ Source20: http://pear.php.net/get/XML_RPC-%{xmlrpcver}.tgz
 Source21: http://pear.php.net/get/Archive_Tar-%{arctarver}.tgz
 Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
+Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -37,6 +39,9 @@ Provides: php-pear(Archive_Tar) = %{arctarver}
 Provides: php-pear(PEAR) = %{version}
 Provides: php-pear(Structures_Graph) = %{structver}
 Provides: php-pear(XML_RPC) = %{xmlrpcver}
+Provides: php-pear(XML_Util) = %{xmlutil}
+Obsoletes: php-pear-XML-Util <= %{xmlutil}
+Provides:  php-pear-XML-Util = %{xmlutil}-%{release}
 Requires: php-cli >= 5.1.0-1
 
 %description
@@ -47,10 +52,12 @@ components.  This package contains the basic PEAR components.
 %setup -cT
 
 # Create a usable PEAR directory (used by install-pear.php)
-for archive in %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23}
+for archive in %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24}
 do
     tar xzf  $archive --strip-components 1 || tar xzf  $archive --strip-path 1
 done
+tar xzf %{SOURCE24} package.xml
+mv package.xml XML_Util.xml
 
 # apply patches on used PEAR during install
 # -- no patch
@@ -74,6 +81,7 @@ export PHP_PEAR_TEMP_DIR=/var/tmp
 
 install -d $RPM_BUILD_ROOT%{peardir} \
            $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear \
+           $RPM_BUILD_ROOT%{_localstatedir}/www/html \
            $RPM_BUILD_ROOT%{peardir}/.pkgxml \
            $RPM_BUILD_ROOT%{_sysconfdir}/rpm \
            $RPM_BUILD_ROOT%{_sysconfdir}/pear
@@ -85,7 +93,8 @@ export INSTALL_ROOT=$RPM_BUILD_ROOT
       %{SOURCE1} -d %{peardir} \
                  -c %{_sysconfdir}/pear \
                  -b %{_bindir} \
-                 %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE20}
+                 -w %{_localstatedir}/www/html \
+                 %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24} %{SOURCE20}
 
 # Replace /usr/bin/* with simple scripts:
 install -m 755 %{SOURCE10} $RPM_BUILD_ROOT%{_bindir}/pear
@@ -106,11 +115,16 @@ install -m 644 -c %{SOURCE13} \
            $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.pear     
 
 # apply patches on installed PEAR tree
-cd $RPM_BUILD_ROOT%{peardir} 
+pushd $RPM_BUILD_ROOT%{peardir} 
 # -- no patch
+popd
 
 # Why this file here ?
 rm -rf $RPM_BUILD_ROOT/.depdb* $RPM_BUILD_ROOT/.lock $RPM_BUILD_ROOT/.channels $RPM_BUILD_ROOT/.filemap
+
+# Need for re-registrying XML_Util
+install -m 644 XML_Util.xml $RPM_BUILD_ROOT%{peardir}/.pkgxml/
+
 
 %check
 # Check that no bogus paths are left in the configuration, or in
@@ -121,9 +135,16 @@ grep '"/tmp"' $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 grep /usr/local $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 grep -rl $RPM_BUILD_ROOT $RPM_BUILD_ROOT && exit 1
 
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 rm new-pear.conf
+
+
+%triggerpostun -- php-pear-XML-Util
+# re-register extension unregistered during postun of obsoleted php-pear-XML-Util
+%{_bindir}/pear install --nodeps --soft --force --register-only %{pear_xmldir}/XML_Util.xml >/dev/null || :
+
 
 %files
 %defattr(-,root,root,-)
@@ -132,10 +153,17 @@ rm new-pear.conf
 %config(noreplace) %{_sysconfdir}/pear.conf
 %config %{_sysconfdir}/rpm/macros.pear
 %dir %{_localstatedir}/cache/php-pear
+%dir %{_localstatedir}/www/html
 %dir %{_sysconfdir}/pear
 %doc LICENSE README
 
+
 %changelog
+* Sat May 30 2009 Remi Collet <Fedora@FamilleCollet.com> 1:1.8.1-1
+- update to 1.8.1
+- Update install-pear.php script (1.39)
+- add XML_Util
+
 * Thu Feb 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.7.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
@@ -147,7 +175,7 @@ rm new-pear.conf
 - Update install-pear.php script (1.32)
 
 * Tue Mar 11 2008 Tim Jackson <rpm@timj.co.uk> 1:1.7.1-2
-- Set cfg_dir to be %{_sysconfdir}/pear (and own it)
+- Set cfg_dir to be %%{_sysconfdir}/pear (and own it)
 - Update install-pear.php script
 - Add %%pear_cfgdir and %%pear_wwwdir macros
 
