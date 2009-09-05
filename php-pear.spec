@@ -1,7 +1,7 @@
 
 %global peardir %{_datadir}/pear
 
-%global xmlrpcver 1.5.1
+%global xmlrpcver 1.5.2
 %global getoptver 1.2.3
 %global arctarver 1.3.3
 %global structver 1.0.2
@@ -9,8 +9,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.8.1
-Release: 2%{?dist}
+Version: 1.9.0
+Release: 1%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
@@ -159,6 +159,9 @@ rm new-pear.conf
 
 
 %changelog
+* Sat Sep 05 2009 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.0-1
+- update to PEAR 1.9.0, XML_RPC 1.5.2
+
 * Sun Jul 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.8.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
