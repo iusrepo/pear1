@@ -3,14 +3,14 @@
 
 %global xmlrpcver 1.5.2
 %global getoptver 1.2.3
-%global arctarver 1.3.3
-%global structver 1.0.2
+%global arctarver 1.3.5
+%global structver 1.0.3
 %global xmlutil   1.2.1
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 License: PHP
 Group: Development/Languages
@@ -159,6 +159,9 @@ rm new-pear.conf
 
 
 %changelog
+* Fri Jan 01 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.0-2
+- update to Archive_Tar-1.3.5, Structures_Graph-1.0.3
+
 * Sat Sep 05 2009 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.0-1
 - update to PEAR 1.9.0, XML_RPC 1.5.2
 
