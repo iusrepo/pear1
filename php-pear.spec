@@ -162,7 +162,7 @@ rm new-pear.conf
 
 
 %changelog
-* Fri Jan 01 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.0-3
+* Sat Jan 16 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.0-3
 - update to XML_RPC-1.5.3
 - fix licenses (multiple)
 - provide bundled LICENSE files
