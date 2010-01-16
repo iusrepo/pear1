@@ -1,7 +1,7 @@
 
 %global peardir %{_datadir}/pear
 
-%global xmlrpcver 1.5.2
+%global xmlrpcver 1.5.3
 %global getoptver 1.2.3
 %global arctarver 1.3.5
 %global structver 1.0.3
@@ -10,9 +10,12 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
-License: PHP
+# PEAR, Archive_Tar, XML_Util are BSD
+# XML-RPC, Console_Getopt are PHP
+# Structures_Graph is LGPL
+License: BSD and PHP and LGPLv2+
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
@@ -20,7 +23,6 @@ Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
 Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
-Source4: LICENSE
 Source10: pear.sh
 Source11: pecl.sh
 Source12: peardev.sh
@@ -55,6 +57,9 @@ components.  This package contains the basic PEAR components.
 for archive in %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24}
 do
     tar xzf  $archive --strip-components 1 || tar xzf  $archive --strip-path 1
+    file=${archive##*/}
+    [ -f LICENSE ] && mv LICENSE LICENSE-${file%%-*}
+    [ -f README ]  && mv README  README-${file%%-*}
 done
 tar xzf %{SOURCE24} package.xml
 mv package.xml XML_Util.xml
@@ -109,8 +114,6 @@ install -m 755 %{SOURCE12} $RPM_BUILD_ROOT%{_bindir}/peardev
 
 %{_bindir}/php -r "print_r(unserialize(substr(file_get_contents('$RPM_BUILD_ROOT%{_sysconfdir}/pear.conf'),17)));"
 
-install -m 644 -c %{SOURCE4} LICENSE
-
 install -m 644 -c %{SOURCE13} \
            $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.pear     
 
@@ -155,10 +158,15 @@ rm new-pear.conf
 %dir %{_localstatedir}/cache/php-pear
 %dir %{_localstatedir}/www/html
 %dir %{_sysconfdir}/pear
-%doc LICENSE README
+%doc README* LICENSE*
 
 
 %changelog
+* Fri Jan 01 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.0-3
+- update to XML_RPC-1.5.3
+- fix licenses (multiple)
+- provide bundled LICENSE files
+
 * Fri Jan 01 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.0-2
 - update to Archive_Tar-1.3.5, Structures_Graph-1.0.3
 
