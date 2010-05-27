@@ -8,8 +8,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.9.0
-Release: 5%{?dist}
+Version: 1.9.1
+Release: 1%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
@@ -161,6 +161,9 @@ rm new-pear.conf
 
 
 %changelog
+* Thu May 27 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.1-1
+- update to 1.9.1
+
 * Thu Apr 29 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.0-5
 - update to Archive_Tar-1.3.7 (only metadata fix)
 
