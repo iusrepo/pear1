@@ -9,7 +9,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
@@ -43,7 +43,7 @@ Provides: php-pear(XML_RPC) = %{xmlrpcver}
 Provides: php-pear(XML_Util) = %{xmlutil}
 Obsoletes: php-pear-XML-Util <= %{xmlutil}
 Provides:  php-pear-XML-Util = %{xmlutil}-%{release}
-Requires: php-cli >= 5.1.0-1
+Requires: php-cli >= 5.1.0-1, php-devel
 
 %description
 PEAR is a framework and distribution system for reusable PHP
@@ -161,6 +161,9 @@ rm new-pear.conf
 
 
 %changelog
+* Fri Sep 10 2010 Joe Orton <jorton@redhat.com> - 1:1.9.1-3
+- require php-devel (without which pecl doesn't work)
+
 * Mon Jul 05 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.1-2
 - update to XML_RPC-1.5.4
 
