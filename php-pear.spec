@@ -9,11 +9,11 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
-# Structures_Graph is LGPL
+# Structures_Graph is LGPLv2+
 License: BSD and PHP and LGPLv2+
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
@@ -22,6 +22,7 @@ Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
 Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
+Source4: LICENSE-XML_RPC
 Source10: pear.sh
 Source11: pecl.sh
 Source12: peardev.sh
@@ -113,6 +114,8 @@ install -m 755 %{SOURCE12} $RPM_BUILD_ROOT%{_bindir}/peardev
 
 %{_bindir}/php -r "print_r(unserialize(substr(file_get_contents('$RPM_BUILD_ROOT%{_sysconfdir}/pear.conf'),17)));"
 
+install -m 644 -c %{SOURCE4} LICENSE-XML_RPC
+
 install -m 644 -c %{SOURCE13} \
            $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.pear     
 
@@ -161,6 +164,9 @@ rm new-pear.conf
 
 
 %changelog
+* Fri Sep 10 2010 Joe Orton <jorton@redhat.com> - 1:1.9.1-4
+- ship LICENSE file for XML_RPC
+
 * Fri Sep 10 2010 Joe Orton <jorton@redhat.com> - 1:1.9.1-3
 - require php-devel (without which pecl doesn't work)
 
