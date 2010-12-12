@@ -1,7 +1,7 @@
 %global peardir %{_datadir}/pear
 
 %global xmlrpcver 1.5.4
-%global getoptver 1.2.3
+%global getoptver 1.3.0
 %global arctarver 1.3.7
 %global structver 1.0.4
 %global xmlutil   1.2.1
@@ -9,7 +9,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.1
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
@@ -18,7 +18,7 @@ License: BSD and PHP and LGPLv2+
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
-# wget http://cvs.php.net/viewvc.cgi/pear-core/install-pear.php?revision=1.39 -O install-pear.php
+# wget http://svn.php.net/viewvc/pear/pear-core/trunk/install-pear.php?revision=287906&view=co -O install-pear.php
 Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
@@ -36,6 +36,7 @@ Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: php-cli >= 5.1.0-1, php-xml, gnupg
+
 Provides: php-pear(Console_Getopt) = %{getoptver}
 Provides: php-pear(Archive_Tar) = %{arctarver}
 Provides: php-pear(PEAR) = %{version}
@@ -44,7 +45,8 @@ Provides: php-pear(XML_RPC) = %{xmlrpcver}
 Provides: php-pear(XML_Util) = %{xmlutil}
 Obsoletes: php-pear-XML-Util <= %{xmlutil}
 Provides:  php-pear-XML-Util = %{xmlutil}-%{release}
-Requires: php-cli >= 5.1.0-1, php-devel
+Requires:  php-cli >= 5.1.0-1
+
 
 %description
 PEAR is a framework and distribution system for reusable PHP
@@ -164,6 +166,11 @@ rm new-pear.conf
 
 
 %changelog
+* Sun Dec 12 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.1-6
+- update Console_Getopt to 1.3.0
+- don't require php-devel (#657812)
+- update install-pear.php
+
 * Tue Oct 26 2010 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.1-5
 - update Structures_Graph to 1.0.4
 

@@ -1,6 +1,6 @@
 <?php
 
-/* $Id: install-pear.php,v 1.38 2009/04/20 04:32:22 cellog Exp $ */
+/* $Id$ */
 
 error_reporting(1803);
 
@@ -40,8 +40,8 @@ $debug = false;
 for ($i = 0; $i < sizeof($argv); $i++) {
     $arg = $argv[$i];
     $bn = basename($arg);
-    if (ereg('package-(.*)\.xml$', $bn, $matches) ||
-        ereg('([A-Za-z0-9_:]+)-.*\.(tar|tgz)$', $bn, $matches)) {
+    if (preg_match('/package-(.*)\.xml$/', $bn, $matches) ||
+        preg_match('/([A-Za-z0-9_:]+)-.*\.(tar|tgz)$/', $bn, $matches)) {
         $install_files[$matches[1]] = $arg;
     } elseif ($arg == '-a') {
         $cache_dir = $argv[$i+1];
