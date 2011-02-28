@@ -8,8 +8,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.9.1
-Release: 7%{?dist}
+Version: 1.9.2
+Release: 1%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
@@ -166,6 +166,10 @@ rm new-pear.conf
 
 
 %changelog
+* Mon Feb 28 2011 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.2-1
+- update to 1.9.2 (bug + security fix)
+  http://pear.php.net/advisory-20110228.txt
+
 * Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.9.1-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
