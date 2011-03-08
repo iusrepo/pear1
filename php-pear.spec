@@ -1,7 +1,7 @@
 %global peardir %{_datadir}/pear
 
 %global xmlrpcver 1.5.4
-%global getoptver 1.3.0
+%global getoptver 1.3.1
 %global arctarver 1.3.7
 %global structver 1.0.4
 %global xmlutil   1.2.1
@@ -166,6 +166,9 @@ rm new-pear.conf
 
 
 %changelog
+* Tue Mar  8 2011 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.2-2
+- update Console_Getopt to 1.3.1 (no change)
+
 * Mon Feb 28 2011 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.2-1
 - update to 1.9.2 (bug + security fix)
   http://pear.php.net/advisory-20110228.txt
