@@ -9,7 +9,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
@@ -18,7 +18,8 @@ License: BSD and PHP and LGPLv2+
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
-# wget http://svn.php.net/viewvc/pear/pear-core/trunk/install-pear.php?revision=287906&view=co -O install-pear.php
+# wget 'http://svn.php.net/viewvc/pear/pear-core/trunk/install-pear.php?revision=308763&view=co' -O install-pear.php
+# see http://pear.php.net/bugs/18367 - doc_dir relocation
 Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
@@ -101,6 +102,7 @@ export INSTALL_ROOT=$RPM_BUILD_ROOT
                  -c %{_sysconfdir}/pear \
                  -b %{_bindir} \
                  -w %{_localstatedir}/www/html \
+                 -D %{_docdir}/pear \
                  %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24} %{SOURCE20}
 
 # Replace /usr/bin/* with simple scripts:
@@ -163,9 +165,15 @@ rm new-pear.conf
 %dir %{_localstatedir}/www/html
 %dir %{_sysconfdir}/pear
 %doc README* LICENSE*
+%dir %{_docdir}/pear
+%doc %{_docdir}/pear/*
 
 
 %changelog
+* Wed Mar 16 2011 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.2-3
+- move %%{pear_docdir} to %%{_docdir}/pear
+  https://fedorahosted.org/fpc/ticket/69
+
 * Tue Mar  8 2011 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.2-2
 - update Console_Getopt to 1.3.1 (no change)
 
