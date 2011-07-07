@@ -8,8 +8,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.9.3
-Release: 2%{?dist}
+Version: 1.9.4
+Release: 1%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
@@ -170,6 +170,9 @@ rm new-pear.conf
 
 
 %changelog
+* Thu Jul 07 2011 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.4-1
+- update to 1.9.4
+
 * Fri Jun 10 2011 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.3-2
 - fix pecl launcher
 
