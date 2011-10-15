@@ -2,14 +2,18 @@
 
 %global xmlrpcver 1.5.5
 %global getoptver 1.3.1
-%global arctarver 1.3.7
+%global arctarver 1.3.8
 %global structver 1.0.4
 %global xmlutil   1.2.1
+
+# Tests are only run with rpmbuild --with tests
+# Can't be run in mock / koji because PEAR is the first package
+%global with_tests       %{?_with_tests:1}%{!?_with_tests:0}
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
@@ -37,6 +41,9 @@ Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: php-cli >= 5.1.0-1, php-xml, gnupg
+%if %{with_tests}
+BuildRequires:  php-pear(pear.phpunit.de/PHPUnit)
+%endif
 
 Provides: php-pear(Console_Getopt) = %{getoptver}
 Provides: php-pear(Archive_Tar) = %{arctarver}
@@ -145,6 +152,23 @@ grep /usr/local $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
 grep -rl $RPM_BUILD_ROOT $RPM_BUILD_ROOT && exit 1
 
 
+%if %{with_tests}
+cd $RPM_BUILD_ROOT%{pear_phpdir}/test/Structures_Graph/tests
+phpunit \
+   -d date.timezone=UTC \
+   -d include_path=.:$RPM_BUILD_ROOT%{pear_phpdir}:%{pear_phpdir}: \
+   AllTests || exit 1
+
+cd $RPM_BUILD_ROOT%{pear_phpdir}/test/XML_Util/tests
+phpunit \
+   -d date.timezone=UTC \
+   -d include_path=.:$RPM_BUILD_ROOT%{pear_phpdir}:%{pear_phpdir}: \
+   AllTests || exit 1
+%else
+echo 'Test suite disabled (missing "--with tests" option)'
+%endif
+
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 rm new-pear.conf
@@ -170,6 +194,10 @@ rm new-pear.conf
 
 
 %changelog
+* Sat Oct 15 2011 Remi Collet <remi@fedoraproject.org> 1:1.9.4-3
+- update Archive_Tar to 1.3.8
+- allow to build with "tests" option
+
 * Sat Aug 27 2011 Remi Collet <Fedora@FamilleCollet.com> 1:1.9.4-2
 - update to XML_RPC-1.5.5
 
