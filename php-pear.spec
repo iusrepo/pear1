@@ -2,7 +2,7 @@
 
 %global xmlrpcver 1.5.5
 %global getoptver 1.3.1
-%global arctarver 1.3.8
+%global arctarver 1.3.9
 %global structver 1.0.4
 %global xmlutil   1.2.1
 
@@ -13,7 +13,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
@@ -22,8 +22,7 @@ License: BSD and PHP and LGPLv2+
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
-# wget 'http://svn.php.net/viewvc/pear/pear-core/trunk/install-pear.php?revision=308763&view=co' -O install-pear.php
-# see http://pear.php.net/bugs/18367 - doc_dir relocation
+# wget https://raw.github.com/pear/pear-core/master/install-pear.php
 Source1: install-pear.php
 Source2: relocate.php
 Source3: strip.php
@@ -37,6 +36,8 @@ Source21: http://pear.php.net/get/Archive_Tar-%{arctarver}.tgz
 Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
+# From RHEL: ignore REST cache creation failures as non-root user (#747361)
+Patch0: php-pear-1.9.4-restcache.patch
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -132,7 +133,9 @@ install -m 644 -c %{SOURCE13} \
 
 # apply patches on installed PEAR tree
 pushd $RPM_BUILD_ROOT%{peardir} 
-# -- no patch
+ pushd PEAR
+  %__patch -s --no-backup --fuzz 0 -p0 < %{PATCH0}
+ popd
 popd
 
 # Why this file here ?
@@ -194,6 +197,11 @@ rm new-pear.conf
 
 
 %changelog
+* Mon Feb 27 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-5
+- Update Archive_Tar to 1.3.9
+- add patch from RHEL (Joe Orton)
+- fix install-pear.php URL (with our patch for doc_dir applied)
+
 * Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.9.4-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
