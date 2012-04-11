@@ -4,7 +4,7 @@
 # XML_RPC Please Provides LICENSE file
 %global xmlrpcver 1.5.5
 %global getoptver 1.3.1
-%global arctarver 1.3.9
+%global arctarver 1.3.10
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.0.4
@@ -17,7 +17,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 6%{?dist}
+Release: 7%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # XML-RPC, Console_Getopt are PHP
@@ -201,6 +201,9 @@ rm new-pear.conf
 
 
 %changelog
+* Wed Apr 11 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-7
+- Update Archive_Tar to 1.3.10
+
 * Wed Apr 04 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-6
 - fix Obsoletes version for XML_Util (#226295)
 - add link to upstream bug - please Provides LICENSE file
