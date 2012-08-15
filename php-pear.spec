@@ -14,7 +14,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 9%{?dist}
+Release: 10%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -176,6 +176,12 @@ rm -rf $RPM_BUILD_ROOT
 rm new-pear.conf
 
 
+%post
+# force new value as pear.conf is (noreplace)
+%{_bindir}/pear config-set test_dir \
+    %{_datarootdir}/tests/pear system >/dev/null || :
+
+
 %triggerpostun -- php-pear-XML-Util
 # re-register extension unregistered during postun of obsoleted php-pear-XML-Util
 %{_bindir}/pear install --nodeps --soft --force --register-only \
@@ -200,6 +206,9 @@ rm new-pear.conf
 
 
 %changelog
+* Tue Aug 15 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-10
+- enforce test_dir on update
+
 * Mon Aug 13 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-9
 - move tests to /usr/share/tests/pear
 - move pkgxml to /var/lib/pear
