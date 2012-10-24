@@ -1,4 +1,5 @@
 %global peardir %{_datadir}/pear
+%global metadir %{_localstatedir}/lib/pear
 
 %global getoptver 1.3.1
 %global arctarver 1.3.10
@@ -14,7 +15,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 12%{?dist}
+Release: 13%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -37,6 +38,8 @@ Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 # From RHEL: ignore REST cache creation failures as non-root user (#747361)
 # TODO See https://github.com/pear/pear-core/commit/dfef86e05211d2abc7870209d69064d448ef53b3#PEAR/REST.php
 Patch0: php-pear-1.9.4-restcache.patch
+# Relocate Metadata
+Patch1: php-pear-metadata.patch
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -74,9 +77,10 @@ do
     [ -f package2.xml ] && mv package2.xml ${file%%-*}.xml \
                         || mv package.xml  ${file%%-*}.xml
 done
+cp %{SOURCE1} .
 
 # apply patches on used PEAR during install
-# -- no patch
+%patch1 -p0 -b .metadata
 
 %build
 # This is an empty build section.
@@ -106,14 +110,16 @@ export INSTALL_ROOT=$RPM_BUILD_ROOT
 
 %{_bindir}/php -n -dmemory_limit=32M -dshort_open_tag=0 -dsafe_mode=0 \
          -derror_reporting=E_ALL -ddetect_unicode=0 \
-      %{SOURCE1} --dir    %{peardir} \
-                 --cache  %{_localstatedir}/cache/php-pear \
-                 --config %{_sysconfdir}/pear \
-                 --bin    %{_bindir} \
-                 --www    %{_localstatedir}/www/html \
-                 --doc    %{_docdir}/pear \
-                 --test   %{_datadir}/tests/pear \
-                 --data   %{_datadir}/pear-data \
+         install-pear.php --force \
+                 --dir      %{peardir} \
+                 --cache    %{_localstatedir}/cache/php-pear \
+                 --config   %{_sysconfdir}/pear \
+                 --bin      %{_bindir} \
+                 --www      %{_localstatedir}/www/html \
+                 --doc      %{_docdir}/pear \
+                 --test     %{_datadir}/tests/pear \
+                 --data     %{_datadir}/pear-data \
+                 --metadata %{metadir} \
                  %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24}
 
 # Replace /usr/bin/* with simple scripts:
@@ -136,6 +142,7 @@ pushd $RPM_BUILD_ROOT%{peardir}
  pushd PEAR
   %__patch -s --no-backup --fuzz 0 -p0 < %{PATCH0}
  popd
+  %__patch -s --no-backup --fuzz 0 -p0 < %{PATCH1}
 popd
 
 # Why this file here ?
@@ -177,6 +184,14 @@ rm -rf $RPM_BUILD_ROOT
 rm new-pear.conf
 
 
+%pre
+# Manage relocation of metadata, before update to pear
+if [ -d %{peardir}/.registry -a ! -d %{metadir}/.registry ]; then
+  mkdir -p %{metadir}
+  mv -f %{peardir}/.??* %{metadir}
+fi
+
+
 %post
 # force new value as pear.conf is (noreplace)
 %{_bindir}/pear config-set \
@@ -185,6 +200,10 @@ rm new-pear.conf
 
 %{_bindir}/pear config-set \
     data_dir %{_datadir}/pear-data \
+    system >/dev/null || :
+
+%{_bindir}/pear config-set \
+    metadata_dir %{metadir} \
     system >/dev/null || :
 
 
@@ -197,6 +216,7 @@ rm new-pear.conf
 %files
 %defattr(-,root,root,-)
 %{peardir}
+%{metadir}
 %{_bindir}/*
 %config(noreplace) %{_sysconfdir}/pear.conf
 %config %{_sysconfdir}/rpm/macros.pear
@@ -209,10 +229,12 @@ rm new-pear.conf
 %dir %{_datadir}/tests
 %{_datadir}/tests/pear
 %{_datadir}/pear-data
-%{_localstatedir}/lib/pear
 
 
 %changelog
+* Wed Sep 26 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-13
+- move metadata to /var/lib/pear
+
 * Wed Sep 26 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-12
 - drop relocate stuff, no more needed
 
