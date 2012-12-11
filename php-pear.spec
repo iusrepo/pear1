@@ -15,7 +15,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 13%{?dist}
+Release: 14%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -40,6 +40,9 @@ Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 Patch0: php-pear-1.9.4-restcache.patch
 # Relocate Metadata
 Patch1: php-pear-metadata.patch
+# Fix for new PHP 5.5 unpack format
+# http://pear.php.net/bugs/19746
+Patch2: php-pear-1.9.4-php55.patch
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -55,7 +58,22 @@ Provides: php-pear(Structures_Graph) = %{structver}
 Provides: php-pear(XML_Util) = %{xmlutil}
 Obsoletes: php-pear-XML-Util < %{xmlutil}-%{release}
 Provides:  php-pear-XML-Util = %{xmlutil}-%{release}
-Requires:  php-cli >= 5.1.0-1
+
+Requires:  php-cli
+# phpci detected extension
+# PEAR (date, spl always builtin):
+Requires:  php-ftp
+Requires:  php-pcre
+Requires:  php-posix
+Requires:  php-tokenizer
+Requires:  php-xml
+Requires:  php-zlib
+# Console_Getopt: pcre
+# Archive_Tar: pcre, posix, zlib
+Requires:  php-bz2
+# Structures_Graph: none
+# XML_Util: pcre
+# optional: overload and xdebug
 
 
 %description
@@ -81,6 +99,7 @@ cp %{SOURCE1} .
 
 # apply patches on used PEAR during install
 %patch1 -p0 -b .metadata
+%patch2 -p1 -b .php55
 
 %build
 # This is an empty build section.
@@ -108,8 +127,8 @@ install -d $RPM_BUILD_ROOT%{peardir} \
 
 export INSTALL_ROOT=$RPM_BUILD_ROOT
 
-%{_bindir}/php -n -dmemory_limit=32M -dshort_open_tag=0 -dsafe_mode=0 \
-         -derror_reporting=E_ALL -ddetect_unicode=0 \
+%{_bindir}/php -dmemory_limit=64M -dshort_open_tag=0 -dsafe_mode=0 \
+         -d 'error_reporting=E_ALL&~E_DEPRECATED' -ddetect_unicode=0 \
          install-pear.php --force \
                  --dir      %{peardir} \
                  --cache    %{_localstatedir}/cache/php-pear \
@@ -128,8 +147,8 @@ install -m 755 %{SOURCE11} $RPM_BUILD_ROOT%{_bindir}/pecl
 install -m 755 %{SOURCE12} $RPM_BUILD_ROOT%{_bindir}/peardev
 
 # Sanitize the pear.conf
-%{_bindir}/php -n %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf ext_dir >new-pear.conf
-%{_bindir}/php -n %{SOURCE3} new-pear.conf http_proxy > $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf
+%{_bindir}/php %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf ext_dir >new-pear.conf
+%{_bindir}/php %{SOURCE3} new-pear.conf http_proxy > $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf
 
 %{_bindir}/php -r "print_r(unserialize(substr(file_get_contents('$RPM_BUILD_ROOT%{_sysconfdir}/pear.conf'),17)));"
 
@@ -143,6 +162,7 @@ pushd $RPM_BUILD_ROOT%{peardir}
   %__patch -s --no-backup --fuzz 0 -p0 < %{PATCH0}
  popd
   %__patch -s --no-backup --fuzz 0 -p0 < %{PATCH1}
+  %__patch -s --no-backup --fuzz 0 -p1 < %{PATCH2}
 popd
 
 # Why this file here ?
@@ -232,6 +252,12 @@ fi
 
 
 %changelog
+* Tue Dec 11 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-14
+- add explicit requires on all needed extensions (phpci)
+- fix pecl launcher (need ini to be parsed for some
+  extenstions going to be build as shared, mainly simplexml)
+- add fix for new unpack format (php 5.5)
+
 * Wed Sep 26 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-13
 - move metadata to /var/lib/pear
 
