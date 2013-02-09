@@ -2,7 +2,7 @@
 %global metadir %{_localstatedir}/lib/pear
 
 %global getoptver 1.3.1
-%global arctarver 1.3.10
+%global arctarver 1.3.11
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.0.4
@@ -15,7 +15,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 14%{?dist}
+Release: 15%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -40,9 +40,6 @@ Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 Patch0: php-pear-1.9.4-restcache.patch
 # Relocate Metadata
 Patch1: php-pear-metadata.patch
-# Fix for new PHP 5.5 unpack format
-# http://pear.php.net/bugs/19746
-Patch2: php-pear-1.9.4-php55.patch
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -56,8 +53,8 @@ Provides: php-pear(Archive_Tar) = %{arctarver}
 Provides: php-pear(PEAR) = %{version}
 Provides: php-pear(Structures_Graph) = %{structver}
 Provides: php-pear(XML_Util) = %{xmlutil}
-Obsoletes: php-pear-XML-Util < %{xmlutil}-%{release}
-Provides:  php-pear-XML-Util = %{xmlutil}-%{release}
+Obsoletes: php-pear-XML-Util < %{xmlutil}
+Provides:  php-pear-XML-Util = %{xmlutil}
 
 Requires:  php-cli
 # phpci detected extension
@@ -99,10 +96,11 @@ cp %{SOURCE1} .
 
 # apply patches on used PEAR during install
 %patch1 -p0 -b .metadata
-%patch2 -p1 -b .php55
+
 
 %build
 # This is an empty build section.
+
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -162,7 +160,6 @@ pushd $RPM_BUILD_ROOT%{peardir}
   %__patch -s --no-backup --fuzz 0 -p0 < %{PATCH0}
  popd
   %__patch -s --no-backup --fuzz 0 -p0 < %{PATCH1}
-  %__patch -s --no-backup --fuzz 0 -p1 < %{PATCH2}
 popd
 
 # Why this file here ?
@@ -252,6 +249,10 @@ fi
 
 
 %changelog
+* Sat Feb  9 2013 Remi Collet <remi@fedoraproject.org> 1:1.9.4-15
+- update Archive_Tar to 1.3.11
+- drop php 5.5 patch merged upstream
+
 * Tue Dec 11 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-14
 - add explicit requires on all needed extensions (phpci)
 - fix pecl launcher (need ini to be parsed for some
