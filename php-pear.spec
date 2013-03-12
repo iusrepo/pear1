@@ -15,7 +15,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 15%{?dist}
+Release: 16%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -236,7 +236,7 @@ fi
 %{metadir}
 %{_bindir}/*
 %config(noreplace) %{_sysconfdir}/pear.conf
-%config %{_sysconfdir}/rpm/macros.pear
+%{_sysconfdir}/rpm/macros.pear
 %dir %{_localstatedir}/cache/php-pear
 %dir %{_localstatedir}/www/html
 %dir %{_sysconfdir}/pear
@@ -249,6 +249,10 @@ fi
 
 
 %changelog
+* Tue Mar 12 2013 Ralf Corsépius <corsepiu@fedoraproject.org> - 1:1.9.4-16
+- Remove %%config from %%{_sysconfdir}/rpm/macros.*
+  (https://fedorahosted.org/fpc/ticket/259).
+
 * Sat Feb  9 2013 Remi Collet <remi@fedoraproject.org> 1:1.9.4-15
 - update Archive_Tar to 1.3.11
 - drop php 5.5 patch merged upstream
