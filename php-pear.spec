@@ -15,7 +15,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 16%{?dist}
+Release: 17%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -211,17 +211,26 @@ fi
 
 %post
 # force new value as pear.conf is (noreplace)
+current=$(%{_bindir}/pear config-get test_dir system)
+if [ "$current" != "%{_datadir}/tests/pear" ]; then
 %{_bindir}/pear config-set \
     test_dir %{_datadir}/tests/pear \
     system >/dev/null || :
+fi
 
+current=$(%{_bindir}/pear config-get data_dir system)
+if [ "$current" != "%{_datadir}/pear-data" ]; then
 %{_bindir}/pear config-set \
     data_dir %{_datadir}/pear-data \
     system >/dev/null || :
+fi
 
+current=$(%{_bindir}/pear config-get metadata_dir system)
+if [ "$current" != "%{metadir}" ]; then
 %{_bindir}/pear config-set \
     metadata_dir %{metadir} \
     system >/dev/null || :
+fi
 
 
 %triggerpostun -- php-pear-XML-Util
@@ -249,6 +258,10 @@ fi
 
 
 %changelog
+* Thu Apr 25 2013 Remi Collet <rcollet@redhat.com> 1:1.9.4-17
+- improve post scriptlet to avoid updating pear.conf
+  when not needed
+
 * Tue Mar 12 2013 Ralf Corsépius <corsepiu@fedoraproject.org> - 1:1.9.4-16
 - Remove %%config from %%{_sysconfdir}/rpm/macros.*
   (https://fedorahosted.org/fpc/ticket/259).
@@ -273,7 +286,7 @@ fi
 - move data to /usr/share/pear-data
 - provides all package.xml
 
-* Tue Aug 15 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-10
+* Wed Aug 15 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-10
 - enforce test_dir on update
 
 * Mon Aug 13 2012 Remi Collet <remi@fedoraproject.org> 1:1.9.4-9
