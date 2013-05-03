@@ -15,7 +15,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 17%{?dist}
+Release: 18%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -242,7 +242,14 @@ fi
 %files
 %defattr(-,root,root,-)
 %{peardir}
-%{metadir}
+%dir %{metadir}
+%{metadir}/.channels
+%verify(not mtime size md5) %{metadir}/.depdb
+%verify(not mtime)%{metadir}/.depdblock
+%verify(not mtime size md5)%{metadir}/.filemap
+%verify(not mtime)%{metadir}/.lock
+%{metadir}/.registry
+%{metadir}/pkgxml
 %{_bindir}/*
 %config(noreplace) %{_sysconfdir}/pear.conf
 %{_sysconfdir}/rpm/macros.pear
@@ -258,6 +265,9 @@ fi
 
 
 %changelog
+* Fri May  3 2013 Remi Collet <rcollet@redhat.com> 1:1.9.4-18
+- don't verify metadata file content
+
 * Thu Apr 25 2013 Remi Collet <rcollet@redhat.com> 1:1.9.4-17
 - improve post scriptlet to avoid updating pear.conf
   when not needed
