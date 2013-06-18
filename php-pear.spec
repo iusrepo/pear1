@@ -15,7 +15,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 18%{?dist}
+Release: 19%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -35,6 +35,12 @@ Source21: http://pear.php.net/get/Archive_Tar-%{arctarver}.tgz
 Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
+# Man pages
+Source30: pear.1
+Source31: pecl.1
+Source32: peardev.1
+
+
 # From RHEL: ignore REST cache creation failures as non-root user (#747361)
 # TODO See https://github.com/pear/pear-core/commit/dfef86e05211d2abc7870209d69064d448ef53b3#PEAR/REST.php
 Patch0: php-pear-1.9.4-restcache.patch
@@ -92,7 +98,7 @@ do
     [ -f package2.xml ] && mv package2.xml ${file%%-*}.xml \
                         || mv package.xml  ${file%%-*}.xml
 done
-cp %{SOURCE1} .
+cp %{SOURCE1} %{SOURCE30} %{SOURCE31} %{SOURCE32} .
 
 # apply patches on used PEAR during install
 %patch1 -p0 -b .metadata
@@ -167,6 +173,10 @@ rm -rf $RPM_BUILD_ROOT/.depdb* $RPM_BUILD_ROOT/.lock $RPM_BUILD_ROOT/.channels $
 
 # Need for re-registrying XML_Util
 install -m 644 *.xml $RPM_BUILD_ROOT%{_localstatedir}/lib/pear/pkgxml
+
+# The man pages
+install -d $RPM_BUILD_ROOT%{_mandir}/man1
+install -p -m 644 pear.1 pecl.1 peardev.1 $RPM_BUILD_ROOT%{_mandir}/man1/
 
 
 %check
@@ -262,9 +272,15 @@ fi
 %dir %{_datadir}/tests
 %{_datadir}/tests/pear
 %{_datadir}/pear-data
+%{_mandir}/man1/pear.1*
+%{_mandir}/man1/pecl.1*
+%{_mandir}/man1/peardev.1*
 
 
 %changelog
+* Tue Jun 18 2013 Remi Collet <rcollet@redhat.com> 1:1.9.4-19
+- add man pages for pear, peardev and pecl commands
+
 * Fri May  3 2013 Remi Collet <rcollet@redhat.com> 1:1.9.4-18
 - don't verify metadata file content
 
