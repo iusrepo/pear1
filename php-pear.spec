@@ -15,7 +15,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 19%{?dist}
+Release: 20%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -36,9 +36,12 @@ Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 # Man pages
+# https://github.com/pear/pear-core/pull/14
 Source30: pear.1
 Source31: pecl.1
 Source32: peardev.1
+# https://github.com/pear/pear-core/pull/16
+Source33: pear.conf.5
 
 
 # From RHEL: ignore REST cache creation failures as non-root user (#747361)
@@ -98,7 +101,7 @@ do
     [ -f package2.xml ] && mv package2.xml ${file%%-*}.xml \
                         || mv package.xml  ${file%%-*}.xml
 done
-cp %{SOURCE1} %{SOURCE30} %{SOURCE31} %{SOURCE32} .
+cp %{SOURCE1} %{SOURCE30} %{SOURCE31} %{SOURCE32} %{SOURCE33} .
 
 # apply patches on used PEAR during install
 %patch1 -p0 -b .metadata
@@ -177,6 +180,8 @@ install -m 644 *.xml $RPM_BUILD_ROOT%{_localstatedir}/lib/pear/pkgxml
 # The man pages
 install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install -p -m 644 pear.1 pecl.1 peardev.1 $RPM_BUILD_ROOT%{_mandir}/man1/
+install -d $RPM_BUILD_ROOT%{_mandir}/man5
+install -p -m 644 pear.conf.5 $RPM_BUILD_ROOT%{_mandir}/man5/
 
 
 %check
@@ -275,9 +280,13 @@ fi
 %{_mandir}/man1/pear.1*
 %{_mandir}/man1/pecl.1*
 %{_mandir}/man1/peardev.1*
+%{_mandir}/man5/pear.conf.5*
 
 
 %changelog
+* Wed Jul 10 2013 Remi Collet <rcollet@redhat.com> 1:1.9.4-20
+- add man page for pear.conf file
+
 * Tue Jun 18 2013 Remi Collet <rcollet@redhat.com> 1:1.9.4-19
 - add man pages for pear, peardev and pecl commands
 
