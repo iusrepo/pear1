@@ -15,7 +15,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 21%{?dist}
+Release: 22%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -130,6 +130,8 @@ install -d $RPM_BUILD_ROOT%{peardir} \
            $RPM_BUILD_ROOT%{_localstatedir}/www/html \
            $RPM_BUILD_ROOT%{_localstatedir}/lib/pear/pkgxml \
            $RPM_BUILD_ROOT%{_sysconfdir}/rpm \
+           $RPM_BUILD_ROOT%{_docdir}/pear \
+           $RPM_BUILD_ROOT%{_docdir}/pecl \
            $RPM_BUILD_ROOT%{_sysconfdir}/pear
 
 export INSTALL_ROOT=$RPM_BUILD_ROOT
@@ -247,6 +249,14 @@ if [ "$current" != "%{metadir}" ]; then
     system >/dev/null || :
 fi
 
+current=$(%{_bindir}/pear config-get -c pecl doc_dir system)
+if [ "$current" != "%{_docdir}/pecl" ]; then
+%{_bindir}/pear config-set \
+    -c pecl \
+    doc_dir %{_docdir}/pecl \
+    system >/dev/null || :
+fi
+
 
 %triggerpostun -- php-pear-XML-Util
 # re-register extension unregistered during postun of obsoleted php-pear-XML-Util
@@ -274,6 +284,7 @@ fi
 %doc README* LICENSE*
 %dir %{_docdir}/pear
 %doc %{_docdir}/pear/*
+%dir %{_docdir}/pecl
 %dir %{_datadir}/tests
 %{_datadir}/tests/pear
 %{_datadir}/pear-data
@@ -284,6 +295,9 @@ fi
 
 
 %changelog
+* Mon Oct 14 2013 Remi Collet <rcollet@redhat.com> 1:1.9.4-22
+- set pecl doc_dir to /usr/share/doc/pecl
+
 * Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.9.4-21
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
