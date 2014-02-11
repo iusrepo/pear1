@@ -12,10 +12,12 @@
 # Can't be run in mock / koji because PEAR is the first package
 %global with_tests       %{?_with_tests:1}%{!?_with_tests:0}
 
+%global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
+
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 23%{?dist}
+Release: 24%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -106,6 +108,10 @@ cp %{SOURCE1} %{SOURCE30} %{SOURCE31} %{SOURCE32} %{SOURCE33} .
 # apply patches on used PEAR during install
 %patch1 -p0 -b .metadata
 
+sed -e 's:@BINDIR@:%{_bindir}:' \
+    -e 's:@LIBDIR@:%{_localstatedir}/lib:' \
+    %{SOURCE13} > macros.pear
+
 
 %build
 # This is an empty build section.
@@ -129,7 +135,6 @@ install -d $RPM_BUILD_ROOT%{peardir} \
            $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear \
            $RPM_BUILD_ROOT%{_localstatedir}/www/html \
            $RPM_BUILD_ROOT%{_localstatedir}/lib/pear/pkgxml \
-           $RPM_BUILD_ROOT%{_sysconfdir}/rpm \
            $RPM_BUILD_ROOT%{_docdir}/pecl \
            $RPM_BUILD_ROOT%{_datadir}/tests/pecl \
            $RPM_BUILD_ROOT%{_sysconfdir}/pear
@@ -162,8 +167,8 @@ install -m 755 %{SOURCE12} $RPM_BUILD_ROOT%{_bindir}/peardev
 %{_bindir}/php -r "print_r(unserialize(substr(file_get_contents('$RPM_BUILD_ROOT%{_sysconfdir}/pear.conf'),17)));"
 
 
-install -m 644 -c %{SOURCE13} \
-           $RPM_BUILD_ROOT%{_sysconfdir}/rpm/macros.pear     
+install -m 644 -D macros.pear \
+           $RPM_BUILD_ROOT%{macrosdir}/macros.pear
 
 # apply patches on installed PEAR tree
 pushd $RPM_BUILD_ROOT%{peardir} 
@@ -285,7 +290,7 @@ fi
 %{metadir}/pkgxml
 %{_bindir}/*
 %config(noreplace) %{_sysconfdir}/pear.conf
-%{_sysconfdir}/rpm/macros.pear
+%{macrosdir}/macros.pear
 %dir %{_localstatedir}/cache/php-pear
 %dir %{_localstatedir}/www/html
 %dir %{_sysconfdir}/pear
@@ -304,6 +309,10 @@ fi
 
 
 %changelog
+* Tue Feb 11 2014 Remi Collet <rcollet@redhat.com> 1:1.9.4-24
+- Expand path in macros.pear
+- Install macros to /usr/lib/rpm/macros.d where available
+
 * Tue Oct 15 2013 Remi Collet <rcollet@redhat.com> 1:1.9.4-23
 - set pecl test_dir to /usr/share/tests/pecl
 
