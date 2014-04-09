@@ -17,7 +17,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.4
-Release: 24%{?dist}
+Release: 25%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -309,6 +309,10 @@ fi
 
 
 %changelog
+* Wed Apr  9 2014 Remi Collet <rcollet@redhat.com> 1:1.9.4-25
+- only enable needed extensions for pear/pecl commands
+- fix typo in pear man page
+
 * Tue Feb 11 2014 Remi Collet <rcollet@redhat.com> 1:1.9.4-24
 - Expand path in macros.pear
 - Install macros to /usr/lib/rpm/macros.d where available
