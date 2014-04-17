@@ -1,8 +1,5 @@
 #!/bin/sh
 exec /usr/bin/php -C \
-    -n \
-    -d extension=posix.so \
-    -d extension=xml.so \
     -d include_path=/usr/share/pear \
     -d date.timezone=UTC \
     -d output_buffering=1 \
