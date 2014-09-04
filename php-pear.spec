@@ -2,7 +2,7 @@
 %global metadir %{_localstatedir}/lib/pear
 
 %global getoptver 1.3.1
-%global arctarver 1.3.12
+%global arctarver 1.3.13
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.0.4
@@ -17,7 +17,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.5
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -54,7 +54,9 @@ Patch1: php-pear-metadata.patch
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: php-cli >= 5.1.0-1, php-xml, gnupg
+BuildRequires: php-cli
+BuildRequires: php-xml
+BuildRequires: gnupg
 %if %{with_tests}
 BuildRequires:  %{_bindir}/phpunit
 %endif
@@ -82,6 +84,13 @@ Requires:  php-bz2
 # Structures_Graph: none
 # XML_Util: pcre
 # optional: overload and xdebug
+%if 0%{?fedora} >= 21
+%global with_html_dir 0
+# for /var/www/html ownership
+Requires: httpd-filesystem
+%else
+%global with_html_dir 1
+%endif
 
 
 %description
@@ -298,9 +307,13 @@ fi
 %config(noreplace) %{_sysconfdir}/pear.conf
 %{macrosdir}/macros.pear
 %dir %{_localstatedir}/cache/php-pear
+%if %{with_html_dir}
 %dir %{_localstatedir}/www/html
+%endif
 %dir %{_sysconfdir}/pear
-%doc README* LICENSE*
+%{!?_licensedir:%global license %%doc}
+%license LICENSE*
+%doc README*
 %dir %{_docdir}/pear
 %doc %{_docdir}/pear/*
 %dir %{_docdir}/pecl
@@ -315,6 +328,11 @@ fi
 
 
 %changelog
+* Thu Sep  4 2014 Remi Collet <remi@fedoraproject.org> 1:1.9.5-3
+- update Archive_Tar to 1.3.13
+- requires httpd-filesystem for /var/www/html ownership (F21+)
+- fix license handling
+
 * Tue Aug 12 2014 Remi Collet <remi@fedoraproject.org> 1:1.9.5-2
 - update Archive_Tar to 1.3.12
 
