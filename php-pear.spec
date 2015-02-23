@@ -1,7 +1,7 @@
 %global peardir %{_datadir}/pear
 %global metadir %{_localstatedir}/lib/pear
 
-%global getoptver 1.3.1
+%global getoptver 1.4.0
 %global arctarver 1.3.13
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
@@ -17,12 +17,11 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.5
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 1
-# PEAR, Archive_Tar, XML_Util are BSD
-# Console_Getopt is PHP
+# PEAR, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv2+
-License: BSD and PHP and LGPLv2+
+License: BSD and LGPLv2+
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
@@ -286,10 +285,10 @@ if [ "$current" != "%{_datadir}/tests/pecl" ]; then
 fi
 
 
-%triggerpostun -- php-pear-XML-Util
-# re-register extension unregistered during postun of obsoleted php-pear-XML-Util
-%{_bindir}/pear install --nodeps --soft --force --register-only \
-    %{_localstatedir}/lib/pear/pkgxml/XML_Util.xml >/dev/null || :
+%postun
+if [ $1 -eq 0 -a -d %{metadir}/.registry ] ; then
+  rm -rf %{metadir}/.registry
+fi
 
 
 %files
@@ -298,9 +297,9 @@ fi
 %dir %{metadir}
 %{metadir}/.channels
 %verify(not mtime size md5) %{metadir}/.depdb
-%verify(not mtime)%{metadir}/.depdblock
-%verify(not mtime size md5)%{metadir}/.filemap
-%verify(not mtime)%{metadir}/.lock
+%verify(not mtime)          %{metadir}/.depdblock
+%verify(not mtime size md5) %{metadir}/.filemap
+%verify(not mtime)          %{metadir}/.lock
 %{metadir}/.registry
 %{metadir}/pkgxml
 %{_bindir}/*
@@ -328,6 +327,13 @@ fi
 
 
 %changelog
+* Mon Feb 23 2015 Remi Collet <remi@fedoraproject.org> 1:1.9.5-4
+- update Console_Getopt to 1.4.0
+- raise php minimum version to 5.4
+- cleanup registry after removal
+- drop old php-pear-XML-Util scriptlets
+- remove PHP from License, Console_Getopt is now BSD
+
 * Thu Sep  4 2014 Remi Collet <remi@fedoraproject.org> 1:1.9.5-3
 - update Archive_Tar to 1.3.13
 - requires httpd-filesystem for /var/www/html ownership (F21+)
