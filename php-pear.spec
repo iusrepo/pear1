@@ -2,10 +2,10 @@
 %global metadir %{_localstatedir}/lib/pear
 
 %global getoptver 1.4.0
-%global arctarver 1.3.13
+%global arctarver 1.3.14
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
-%global structver 1.0.4
+%global structver 1.1.0
 %global xmlutil   1.2.3
 
 # Tests are only run with rpmbuild --with tests
@@ -17,11 +17,11 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.5
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util, Console_Getopt are BSD
-# Structures_Graph is LGPLv2+
-License: BSD and LGPLv2+
+# Structures_Graph is LGPLv3+
+License: BSD and LGPLv3+
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
@@ -53,7 +53,7 @@ Patch1: php-pear-metadata.patch
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: php-cli
+BuildRequires: php-cli > 5.4
 BuildRequires: php-xml
 BuildRequires: gnupg
 %if %{with_tests}
@@ -65,9 +65,10 @@ Provides: php-pear(Archive_Tar) = %{arctarver}
 Provides: php-pear(PEAR) = %{version}
 Provides: php-pear(Structures_Graph) = %{structver}
 Provides: php-pear(XML_Util) = %{xmlutil}
-Obsoletes: php-pear-XML-Util < %{xmlutil}
-Provides:  php-pear-XML-Util = %{xmlutil}
 
+# Structures_Graph requires 5.3
+# Console_Getopt requires 5.4
+Requires:  php(language) > 5.4
 Requires:  php-cli
 # phpci detected extension
 # PEAR (date, spl always builtin):
@@ -327,6 +328,10 @@ fi
 
 
 %changelog
+* Fri Feb 27 2015 Remi Collet <remi@fedoraproject.org> 1:1.9.5-5
+- update Structures_Graph to 1.1.0
+- update Archive_Tar to 1.3.14
+
 * Mon Feb 23 2015 Remi Collet <remi@fedoraproject.org> 1:1.9.5-4
 - update Console_Getopt to 1.4.0
 - raise php minimum version to 5.4
