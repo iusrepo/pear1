@@ -2,7 +2,7 @@
 %global metadir %{_localstatedir}/lib/pear
 
 %global getoptver 1.4.0
-%global arctarver 1.3.14
+%global arctarver 1.3.15
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.1.0
@@ -17,7 +17,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.5
-Release: 6%{?dist}
+Release: 7%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -65,6 +65,11 @@ Provides: php-pear(Archive_Tar) = %{arctarver}
 Provides: php-pear(PEAR) = %{version}
 Provides: php-pear(Structures_Graph) = %{structver}
 Provides: php-pear(XML_Util) = %{xmlutil}
+Provides: php-composer(pear/console_getopt) = %{getoptver}
+Provides: php-composer(pear/archive_tar) = %{arctarver}
+Provides: php-composer(pear/pear-core-minimal) = %{version}
+Provides: php-composer(pear/structures_graph) = %{structver}
+Provides: php-composer(pear/xml_util) = %{xmlutil}
 
 # Structures_Graph requires 5.3
 # Console_Getopt requires 5.4
@@ -328,6 +333,10 @@ fi
 
 
 %changelog
+* Fri Mar 13 2015 Remi Collet <remi@fedoraproject.org> 1:1.9.5-7
+- update Archive_Tar to 1.3.15 (no change)
+- add composer provides
+
 * Mon Mar  2 2015 Remi Collet <remi@fedoraproject.org> 1:1.9.5-6
 - update XML_Util to 1.3.0
 
