@@ -17,7 +17,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.5
-Release: 8%{?dist}
+Release: 9%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -333,6 +333,9 @@ fi
 
 
 %changelog
+* Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.9.5-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Tue Apr 14 2015 Remi Collet <remi@fedoraproject.org> 1:1.9.5-8
 - update Archive_Tar to 1.3.16 (no change)
 
