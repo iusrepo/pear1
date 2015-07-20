@@ -1,8 +1,15 @@
+# Fedora spec file for php-pear
+#
+# License: MIT
+# http://opensource.org/licenses/MIT
+#
+# Please preserve changelog entries
+#
 %global peardir %{_datadir}/pear
 %global metadir %{_localstatedir}/lib/pear
 
 %global getoptver 1.4.0
-%global arctarver 1.3.16
+%global arctarver 1.4.0
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.1.0
@@ -17,7 +24,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.9.5
-Release: 9%{?dist}
+Release: 10%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -53,7 +60,8 @@ Patch1: php-pear-metadata.patch
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: php-cli > 5.4
+BuildRequires: php(language) > 5.4
+BuildRequires: php-cli
 BuildRequires: php-xml
 BuildRequires: gnupg
 %if %{with_tests}
@@ -71,8 +79,10 @@ Provides: php-composer(pear/pear-core-minimal) = %{version}
 Provides: php-composer(pear/structures_graph) = %{structver}
 Provides: php-composer(pear/xml_util) = %{xmlutil}
 
-# Structures_Graph requires 5.3
+# Archive_Tar requires 5.2
+# XML_Util, Structures_Graph require 5.3
 # Console_Getopt requires 5.4
+# PEAR requires 4.4
 Requires:  php(language) > 5.4
 Requires:  php-cli
 # phpci detected extension
@@ -333,6 +343,9 @@ fi
 
 
 %changelog
+* Mon Jul 20 2015 Remi Collet <remi@fedoraproject.org> 1:1.9.5-10
+- update Archive_Tar to 1.4.0
+
 * Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:1.9.5-9
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
