@@ -14,6 +14,7 @@
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.1.1
 %global xmlutil   1.3.0
+%global manpages  1.10.0dev2
 
 # Tests are only run with rpmbuild --with tests
 # Can't be run in mock / koji because PEAR is the first package
@@ -21,18 +22,20 @@
 
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
+%global pearprever dev2
+
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.9.5
-Release: 11%{?dist}
+Version: 1.10.0
+Release: 0.1.%{pearprever}%{?dist}
 Epoch: 1
-# PEAR, Archive_Tar, XML_Util, Console_Getopt are BSD
+# PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
 License: BSD and LGPLv3+
 Group: Development/Languages
 URL: http://pear.php.net/package/PEAR
-Source0: http://download.pear.php.net/package/PEAR-%{version}.tgz
-# wget https://raw.github.com/pear/pear-core/master/install-pear.php
+Source0: http://download.pear.php.net/package/PEAR-%{version}%{?pearprever}.tgz
+# wget https://raw.githubusercontent.com/pear/pear-core/stable/install-pear.php
 Source1: install-pear.php
 Source3: strip.php
 Source10: pear.sh
@@ -43,20 +46,7 @@ Source21: http://pear.php.net/get/Archive_Tar-%{arctarver}.tgz
 Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
-# Man pages
-# https://github.com/pear/pear-core/pull/14
-Source30: pear.1
-Source31: pecl.1
-Source32: peardev.1
-# https://github.com/pear/pear-core/pull/16
-Source33: pear.conf.5
-
-
-# From RHEL: ignore REST cache creation failures as non-root user (#747361)
-# TODO See https://github.com/pear/pear-core/commit/dfef86e05211d2abc7870209d69064d448ef53b3#PEAR/REST.php
-Patch0: php-pear-1.9.4-restcache.patch
-# Relocate Metadata
-Patch1: php-pear-metadata.patch
+Source25: http://pear.php.net/get/PEAR_Manpages-%{manpages}.tgz
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -73,6 +63,8 @@ Provides: php-pear(Archive_Tar) = %{arctarver}
 Provides: php-pear(PEAR) = %{version}
 Provides: php-pear(Structures_Graph) = %{structver}
 Provides: php-pear(XML_Util) = %{xmlutil}
+Provides: php-pear(PEAR_Manpages) = %{manpages}
+
 Provides: php-composer(pear/console_getopt) = %{getoptver}
 Provides: php-composer(pear/archive_tar) = %{arctarver}
 Provides: php-composer(pear/pear-core-minimal) = %{version}
@@ -82,7 +74,7 @@ Provides: php-composer(pear/xml_util) = %{xmlutil}
 # Archive_Tar requires 5.2
 # XML_Util, Structures_Graph require 5.3
 # Console_Getopt requires 5.4
-# PEAR requires 4.4
+# PEAR requires 5.4
 Requires:  php(language) > 5.4
 Requires:  php-cli
 # phpci detected extension
@@ -99,13 +91,8 @@ Requires:  php-bz2
 # Structures_Graph: none
 # XML_Util: pcre
 # optional: overload and xdebug
-%if 0%{?fedora} >= 21
-%global with_html_dir 0
 # for /var/www/html ownership
 Requires: httpd-filesystem
-%else
-%global with_html_dir 1
-%endif
 
 
 %description
@@ -116,7 +103,7 @@ components.  This package contains the basic PEAR components.
 %setup -cT
 
 # Create a usable PEAR directory (used by install-pear.php)
-for archive in %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24}
+for archive in %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24} %{SOURCE25}
 do
     tar xzf  $archive --strip-components 1 || tar xzf  $archive --strip-path 1
     file=${archive##*/}
@@ -127,10 +114,10 @@ do
     [ -f package2.xml ] && mv package2.xml ${file%%-*}.xml \
                         || mv package.xml  ${file%%-*}.xml
 done
-cp %{SOURCE1} %{SOURCE30} %{SOURCE31} %{SOURCE32} %{SOURCE33} .
+cp %{SOURCE1} .
 
 # apply patches on used PEAR during install
-%patch1 -p0 -b .metadata
+# None \o/
 
 sed -e 's:@BINDIR@:%{_bindir}:' \
     -e 's:@LIBDIR@:%{_localstatedir}/lib:' \
@@ -165,6 +152,8 @@ install -d $RPM_BUILD_ROOT%{peardir} \
 
 export INSTALL_ROOT=$RPM_BUILD_ROOT
 
+%{_bindir}/php --version
+
 %{_bindir}/php -dmemory_limit=64M -dshort_open_tag=0 -dsafe_mode=0 \
          -d 'error_reporting=E_ALL&~E_DEPRECATED' -ddetect_unicode=0 \
          install-pear.php --force \
@@ -177,7 +166,8 @@ export INSTALL_ROOT=$RPM_BUILD_ROOT
                  --test     %{_datadir}/tests/pear \
                  --data     %{_datadir}/pear-data \
                  --metadata %{metadir} \
-                 %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24}
+                 --man      %{_mandir} \
+                 %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24} %{SOURCE25}
 
 # Replace /usr/bin/* with simple scripts:
 install -m 755 %{SOURCE10} $RPM_BUILD_ROOT%{_bindir}/pear
@@ -196,10 +186,7 @@ install -m 644 -D macros.pear \
 
 # apply patches on installed PEAR tree
 pushd $RPM_BUILD_ROOT%{peardir} 
- pushd PEAR
-  %__patch -s --no-backup --fuzz 0 -p0 < %{PATCH0}
- popd
-  %__patch -s --no-backup --fuzz 0 -p0 < %{PATCH1}
+# none
 popd
 
 # Why this file here ?
@@ -207,12 +194,6 @@ rm -rf $RPM_BUILD_ROOT/.depdb* $RPM_BUILD_ROOT/.lock $RPM_BUILD_ROOT/.channels $
 
 # Need for re-registrying XML_Util
 install -m 644 *.xml $RPM_BUILD_ROOT%{_localstatedir}/lib/pear/pkgxml
-
-# The man pages
-install -d $RPM_BUILD_ROOT%{_mandir}/man1
-install -p -m 644 pear.1 pecl.1 peardev.1 $RPM_BUILD_ROOT%{_mandir}/man1/
-install -d $RPM_BUILD_ROOT%{_mandir}/man5
-install -p -m 644 pear.conf.5 $RPM_BUILD_ROOT%{_mandir}/man5/
 
 
 %check
@@ -330,9 +311,6 @@ fi
 %config(noreplace) %{_sysconfdir}/pear.conf
 %{macrosdir}/macros.pear
 %dir %{_localstatedir}/cache/php-pear
-%if %{with_html_dir}
-%dir %{_localstatedir}/www/html
-%endif
 %dir %{_sysconfdir}/pear
 %{!?_licensedir:%global license %%doc}
 %license LICENSE*
@@ -351,6 +329,12 @@ fi
 
 
 %changelog
+* Fri Jul 31 2015 Remi Collet <remi@fedoraproject.org> 1:1.10.0-0.1.dev2
+- update PEAR to 1.10.0dev2
+- drop all patches, merged upstream
+- drop man pages from sources
+- add PEAR_Manpages upstream package
+
 * Tue Jul 21 2015 Remi Collet <remi@fedoraproject.org> 1:1.9.5-12
 - update Console_Getopt to 1.4.1
 - update Structures_Graph to 1.1.1
