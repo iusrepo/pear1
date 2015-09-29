@@ -22,12 +22,12 @@
 
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
-%global pearprever dev2
+%global pearprever dev3
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.0
-Release: 0.1.%{pearprever}%{?dist}
+Release: 0.2.%{pearprever}%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -329,6 +329,9 @@ fi
 
 
 %changelog
+* Tue Sep 29 2015 Remi Collet <remi@fedoraproject.org> 1:1.10.0-0.2.dev3
+- update PEAR to 1.10.0dev3
+
 * Fri Jul 31 2015 Remi Collet <remi@fedoraproject.org> 1:1.10.0-0.1.dev2
 - update PEAR to 1.10.0dev2
 - drop all patches, merged upstream
