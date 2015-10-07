@@ -14,7 +14,7 @@
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.1.1
 %global xmlutil   1.3.0
-%global manpages  1.10.0dev2
+%global manpages  1.10.0
 
 # Tests are only run with rpmbuild --with tests
 # Can't be run in mock / koji because PEAR is the first package
@@ -22,12 +22,10 @@
 
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
-%global pearprever dev3
-
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.0
-Release: 0.2.%{pearprever}%{?dist}
+Release: 1%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -329,6 +327,9 @@ fi
 
 
 %changelog
+* Wed Oct  7 2015 Remi Collet <remi@fedoraproject.org> 1:1.10.0-1
+- update PEAR and PEAR_Manpages to 1.10.0
+
 * Tue Sep 29 2015 Remi Collet <remi@fedoraproject.org> 1:1.10.0-0.2.dev3
 - update PEAR to 1.10.0dev3
 
