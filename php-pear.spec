@@ -25,7 +25,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -52,6 +52,8 @@ BuildRequires: php(language) > 5.4
 BuildRequires: php-cli
 BuildRequires: php-xml
 BuildRequires: gnupg
+# For pecl_xmldir macro
+BuildRequires: php-devel
 %if %{with_tests}
 BuildRequires:  %{_bindir}/phpunit
 %endif
@@ -234,6 +236,30 @@ exit $ret
 echo 'Test suite disabled (missing "--with tests" option)'
 %endif
 
+## TODO: silent the pecl commands
+
+# Register newly installed PECL packages
+%transfiletriggerin -- %{pecl_xmldir}
+while read file; do
+  %{_bindir}/pecl install --nodeps --soft --force --register-only --nobuild "$file" || :
+done
+
+# Unregister to be removed PECL packages
+# Reading the xml file to retrieve channel and package name
+%transfiletriggerun -- %{pecl_xmldir}
+%{_bindir}/php -r '
+while ($file=fgets(STDIN)) {
+  $file = trim($file);
+  $xml = simplexml_load_file($file);
+  if (isset($xml->channel) &&  isset($xml->name)) {
+    printf("%s/%s\n", $xml->channel, $xml->name);
+  } else {
+    fputs(STDERR, "Bad pecl package file ($file)\n");
+  }
+}' | while read  name; do
+  %{_bindir}/pecl uninstall --nodeps --ignore-errors --register-only "$name" || :
+done
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -327,6 +353,10 @@ fi
 
 
 %changelog
+* Wed Feb 10 2016 Remi Collet <remi@fedoraproject.org> 1:1.10.1-3
+- use file triggers for pecl extensions (un)registration
+- define %%pecl_install and %%pecl_uninstall as noop macro
+
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.10.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
