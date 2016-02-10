@@ -22,6 +22,8 @@
 
 %global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 
+%{!?pecl_xmldir: %global pecl_xmldir %{_sharedstatedir}/php/peclxml}
+
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.1
