@@ -27,7 +27,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.1
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -148,8 +148,6 @@ install -d $RPM_BUILD_ROOT%{peardir} \
            $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear \
            $RPM_BUILD_ROOT%{_localstatedir}/www/html \
            $RPM_BUILD_ROOT%{_localstatedir}/lib/pear/pkgxml \
-           $RPM_BUILD_ROOT%{_docdir}/pecl \
-           $RPM_BUILD_ROOT%{_datadir}/tests/pecl \
            $RPM_BUILD_ROOT%{_sysconfdir}/pear
 
 export INSTALL_ROOT=$RPM_BUILD_ROOT
@@ -343,9 +341,6 @@ fi
 %doc README*
 %dir %{_docdir}/pear
 %doc %{_docdir}/pear/*
-%dir %{_docdir}/pecl
-%dir %{_datadir}/tests
-%dir %{_datadir}/tests/pecl
 %{_datadir}/tests/pear
 %{_datadir}/pear-data
 %{_mandir}/man1/pear.1*
@@ -355,6 +350,9 @@ fi
 
 
 %changelog
+* Thu Jun 30 2016 Remi Collet <remi@fedoraproject.org> 1:1.10.1-5
+- don't own test/doc directories for pecl packages #1351345
+
 * Thu Feb 25 2016 Remi Collet <remi@fedoraproject.org> 1:1.10.1-4
 - update Archive_Tar to 1.4.2
 
