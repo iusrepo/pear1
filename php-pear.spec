@@ -27,7 +27,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.1
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -37,7 +37,7 @@ URL: http://pear.php.net/package/PEAR
 Source0: http://download.pear.php.net/package/PEAR-%{version}%{?pearprever}.tgz
 # wget https://raw.githubusercontent.com/pear/pear-core/stable/install-pear.php
 Source1: install-pear.php
-Source3: strip.php
+Source3: cleanup.php
 Source10: pear.sh
 Source11: pecl.sh
 Source12: peardev.sh
@@ -49,7 +49,6 @@ Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 Source25: http://pear.php.net/get/PEAR_Manpages-%{manpages}.tgz
 
 BuildArch: noarch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: php(language) > 5.4
 BuildRequires: php-cli
 BuildRequires: php-xml
@@ -131,8 +130,6 @@ sed -e 's:@BINDIR@:%{_bindir}:' \
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 export PHP_PEAR_SYSCONF_DIR=%{_sysconfdir}
 export PHP_PEAR_SIG_KEYDIR=%{_sysconfdir}/pearkeys
 export PHP_PEAR_SIG_BIN=%{_bindir}/gpg
@@ -175,9 +172,9 @@ install -m 755 %{SOURCE11} $RPM_BUILD_ROOT%{_bindir}/pecl
 install -m 755 %{SOURCE12} $RPM_BUILD_ROOT%{_bindir}/peardev
 
 # Sanitize the pear.conf
-%{_bindir}/php %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf ext_dir >new-pear.conf
-%{_bindir}/php %{SOURCE3} new-pear.conf http_proxy > $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf
+%{_bindir}/php %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf %{_datadir}
 
+# Display configuration for debug
 %{_bindir}/php -r "print_r(unserialize(substr(file_get_contents('$RPM_BUILD_ROOT%{_sysconfdir}/pear.conf'),17)));"
 
 
@@ -261,59 +258,6 @@ while ($file=fgets(STDIN)) {
 done
 
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-rm new-pear.conf
-
-
-%pre
-# Manage relocation of metadata, before update to pear
-if [ -d %{peardir}/.registry -a ! -d %{metadir}/.registry ]; then
-  mkdir -p %{metadir}
-  mv -f %{peardir}/.??* %{metadir}
-fi
-
-
-%post
-# force new value as pear.conf is (noreplace)
-current=$(%{_bindir}/pear config-get test_dir system)
-if [ "$current" != "%{_datadir}/tests/pear" ]; then
-%{_bindir}/pear config-set \
-    test_dir %{_datadir}/tests/pear \
-    system >/dev/null || :
-fi
-
-current=$(%{_bindir}/pear config-get data_dir system)
-if [ "$current" != "%{_datadir}/pear-data" ]; then
-%{_bindir}/pear config-set \
-    data_dir %{_datadir}/pear-data \
-    system >/dev/null || :
-fi
-
-current=$(%{_bindir}/pear config-get metadata_dir system)
-if [ "$current" != "%{metadir}" ]; then
-%{_bindir}/pear config-set \
-    metadata_dir %{metadir} \
-    system >/dev/null || :
-fi
-
-current=$(%{_bindir}/pear config-get -c pecl doc_dir system)
-if [ "$current" != "%{_docdir}/pecl" ]; then
-%{_bindir}/pear config-set \
-    -c pecl \
-    doc_dir %{_docdir}/pecl \
-    system >/dev/null || :
-fi
-
-current=$(%{_bindir}/pear config-get -c pecl test_dir system)
-if [ "$current" != "%{_datadir}/tests/pecl" ]; then
-%{_bindir}/pear config-set \
-    -c pecl \
-    test_dir %{_datadir}/tests/pecl \
-    system >/dev/null || :
-fi
-
-
 %postun
 if [ $1 -eq 0 -a -d %{metadir}/.registry ] ; then
   rm -rf %{metadir}/.registry
@@ -321,7 +265,6 @@ fi
 
 
 %files
-%defattr(-,root,root,-)
 %{peardir}
 %dir %{metadir}
 %{metadir}/.channels
@@ -336,7 +279,6 @@ fi
 %{macrosdir}/macros.pear
 %dir %{_localstatedir}/cache/php-pear
 %dir %{_sysconfdir}/pear
-%{!?_licensedir:%global license %%doc}
 %license LICENSE*
 %doc README*
 %dir %{_docdir}/pear
@@ -350,6 +292,10 @@ fi
 
 
 %changelog
+* Fri Aug  5 2016 Remi Collet <remi@fedoraproject.org> 1:1.10.1-6
+- improve default config, to avoid change in scriptlet
+- spec cleanup and remove unneeded scriplets
+
 * Thu Jun 30 2016 Remi Collet <remi@fedoraproject.org> 1:1.10.1-5
 - don't own test/doc directories for pecl packages #1351345
 
