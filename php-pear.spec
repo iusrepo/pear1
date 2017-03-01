@@ -26,8 +26,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.10.1
-Release: 11%{?dist}
+Version: 1.10.3
+Release: 1%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -47,9 +47,6 @@ Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 Source25: http://pear.php.net/get/PEAR_Manpages-%{manpages}.tgz
-
-# https://github.com/pear/pear-core/pull/51
-Patch0:   pear-proxy.patch
 
 BuildArch: noarch
 BuildRequires: php(language) > 5.4
@@ -120,8 +117,8 @@ do
 done
 cp %{SOURCE1} .
 
-# apply patches on used PEAR during install
-# Patches applied on installation tree
+# apply patches on PEAR needed during install
+# other patches applied on installation tree
 
 sed -e 's:@BINDIR@:%{_bindir}:' \
     -e 's:@LIBDIR@:%{_localstatedir}/lib:' \
@@ -186,7 +183,7 @@ install -m 644 -D macros.pear \
 
 # apply patches on installed PEAR tree
 pushd $RPM_BUILD_ROOT%{peardir} 
-patch --no-backup --fuzz 0 -p1 < %{PATCH0}
+: no patch \\o/
 popd
 
 # Why this file here ?
@@ -293,6 +290,9 @@ fi
 
 
 %changelog
+* Tue Feb 28 2017 Remi Collet <remi@fedoraproject.org> 1:1.10.3-1
+- update PEAR to 1.10.3
+
 * Thu Feb 23 2017 Remi Collet <remi@fedoraproject.org> 1:1.10.1-12
 - update XML_Util to 1.4.2
 - drop patch merged upstream
