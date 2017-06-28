@@ -26,8 +26,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.10.4
-Release: 2%{?dist}
+Version: 1.10.5
+Release: 1%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -141,13 +141,13 @@ export PHP_PEAR_INSTALL_DIR=%{peardir}
 export PHP_PEAR_CACHE_DIR=${PWD}%{_localstatedir}/cache/php-pear
 export PHP_PEAR_TEMP_DIR=/var/tmp
 
-install -d $RPM_BUILD_ROOT%{peardir} \
-           $RPM_BUILD_ROOT%{_localstatedir}/cache/php-pear \
-           $RPM_BUILD_ROOT%{_localstatedir}/www/html \
-           $RPM_BUILD_ROOT%{_localstatedir}/lib/pear/pkgxml \
-           $RPM_BUILD_ROOT%{_sysconfdir}/pear
+install -d %{buildroot}%{peardir} \
+           %{buildroot}%{_localstatedir}/cache/php-pear \
+           %{buildroot}%{_localstatedir}/www/html \
+           %{buildroot}%{_localstatedir}/lib/pear/pkgxml \
+           %{buildroot}%{_sysconfdir}/pear
 
-export INSTALL_ROOT=$RPM_BUILD_ROOT
+export INSTALL_ROOT=%{buildroot}
 
 %{_bindir}/php --version
 
@@ -167,62 +167,62 @@ export INSTALL_ROOT=$RPM_BUILD_ROOT
                  %{SOURCE0} %{SOURCE21} %{SOURCE22} %{SOURCE23} %{SOURCE24} %{SOURCE25}
 
 # Replace /usr/bin/* with simple scripts:
-install -m 755 %{SOURCE10} $RPM_BUILD_ROOT%{_bindir}/pear
-install -m 755 %{SOURCE11} $RPM_BUILD_ROOT%{_bindir}/pecl
-install -m 755 %{SOURCE12} $RPM_BUILD_ROOT%{_bindir}/peardev
+install -m 755 %{SOURCE10} %{buildroot}%{_bindir}/pear
+install -m 755 %{SOURCE11} %{buildroot}%{_bindir}/pecl
+install -m 755 %{SOURCE12} %{buildroot}%{_bindir}/peardev
 
 # Sanitize the pear.conf
-%{_bindir}/php %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf %{_datadir}
+%{_bindir}/php %{SOURCE3} %{buildroot}%{_sysconfdir}/pear.conf %{_datadir}
 
 # Display configuration for debug
-%{_bindir}/php -r "print_r(unserialize(substr(file_get_contents('$RPM_BUILD_ROOT%{_sysconfdir}/pear.conf'),17)));"
+%{_bindir}/php -r "print_r(unserialize(substr(file_get_contents('%{buildroot}%{_sysconfdir}/pear.conf'),17)));"
 
 
 install -m 644 -D macros.pear \
-           $RPM_BUILD_ROOT%{macrosdir}/macros.pear
+           %{buildroot}%{macrosdir}/macros.pear
 
 # apply patches on installed PEAR tree
-pushd $RPM_BUILD_ROOT%{peardir} 
+pushd %{buildroot}%{peardir}
 : no patch \\o/
 popd
 
 # Why this file here ?
-rm -rf $RPM_BUILD_ROOT/.depdb* $RPM_BUILD_ROOT/.lock $RPM_BUILD_ROOT/.channels $RPM_BUILD_ROOT/.filemap
+rm -rf %{buildroot}/.depdb* %{buildroot}/.lock %{buildroot}/.channels %{buildroot}/.filemap
 
 # Need for re-registrying XML_Util
-install -m 644 *.xml $RPM_BUILD_ROOT%{_localstatedir}/lib/pear/pkgxml
+install -m 644 *.xml %{buildroot}%{_localstatedir}/lib/pear/pkgxml
 
 
 %check
 # Check that no bogus paths are left in the configuration, or in
 # the generated registry files.
-grep $RPM_BUILD_ROOT $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
-grep %{_libdir} $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
-grep '"/tmp"' $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
-grep /usr/local $RPM_BUILD_ROOT%{_sysconfdir}/pear.conf && exit 1
-grep -rl $RPM_BUILD_ROOT $RPM_BUILD_ROOT && exit 1
+grep %{buildroot} %{buildroot}%{_sysconfdir}/pear.conf && exit 1
+grep %{_libdir} %{buildroot}%{_sysconfdir}/pear.conf && exit 1
+grep '"/tmp"' %{buildroot}%{_sysconfdir}/pear.conf && exit 1
+grep /usr/local %{buildroot}%{_sysconfdir}/pear.conf && exit 1
+grep -rl %{buildroot} %{buildroot} && exit 1
 
 
 %if %{with_tests}
 cp /etc/php.ini .
-echo "include_path=.:$RPM_BUILD_ROOT%{peardir}:/usr/share/php" >>php.ini
+echo "include_path=.:%{buildroot}%{peardir}:/usr/share/php" >>php.ini
 export PHPRC=$PWD/php.ini
 LOG=$PWD/rpmlog
 ret=0
 
-cd $RPM_BUILD_ROOT%{_datadir}/tests/pear/Structures_Graph/tests
+cd %{buildroot}%{_datadir}/tests/pear/Structures_Graph/tests
 phpunit \
    AllTests || ret=1
 
-cd $RPM_BUILD_ROOT%{_datadir}/tests/pear/XML_Util/tests
+cd %{buildroot}%{_datadir}/tests/pear/XML_Util/tests
 %{_bindir}/php \
-   $RPM_BUILD_ROOT/usr/share/pear/pearcmd.php \
+   %{buildroot}/usr/share/pear/pearcmd.php \
    run-tests \
    | tee $LOG
 
-cd $RPM_BUILD_ROOT%{_datadir}/tests/pear/Console_Getopt/tests
+cd %{buildroot}%{_datadir}/tests/pear/Console_Getopt/tests
 %{_bindir}/php \
-   $RPM_BUILD_ROOT/usr/share/pear/pearcmd.php \
+   %{buildroot}/usr/share/pear/pearcmd.php \
    run-tests \
    | tee -a $LOG
 
@@ -290,6 +290,9 @@ fi
 
 
 %changelog
+* Wed Jun 28 2017 Remi Collet <remi@remirepo.net> 1:1.10.5-1
+- update PEAR to 1.10.5 (no change)
+
 * Mon Jun 12 2017 Remi Collet <remi@remirepo.net> 1:1.10.4-2
 - update Archive_Tar to 1.4.3
 
