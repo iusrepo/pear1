@@ -13,7 +13,7 @@
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.1.1
-%global xmlutil   1.4.2
+%global xmlutil   1.4.3
 %global manpages  1.10.0
 
 # Tests are only run with rpmbuild --with tests
@@ -27,7 +27,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -290,6 +290,9 @@ fi
 
 
 %changelog
+* Thu Jun 29 2017 Remi Collet <remi@remirepo.net> - 1:1.10.5-2
+- update XML_Util to 1.4.3 (no change)
+
 * Wed Jun 28 2017 Remi Collet <remi@remirepo.net> 1:1.10.5-1
 - update PEAR to 1.10.5 (no change)
 
