@@ -1,0 +1,23 @@
+From c5f321f171783c1b088490dcaf39b0aad5eb5c13 Mon Sep 17 00:00:00 2001
+From: Remi Collet <remi@remirepo.net>
+Date: Thu, 12 Oct 2017 09:35:57 +0200
+Subject: [PATCH] fix  Warning: count(): Parameter must be an array or an
+ object that implements Countable in PEAR/RunTest.php on line 346
+
+---
+ PEAR/RunTest.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/PEAR/RunTest.php b/PEAR/RunTest.php
+index 8eabac3c3..482beccb3 100644
+--- a/PEAR/RunTest.php
++++ b/PEAR/RunTest.php
+@@ -343,7 +343,7 @@ function run($file, $ini_settings = array(), $test_number = 1)
+ 
+         // Check if test should be skipped.
+         $res  = $this->_runSkipIf($section_text, $temp_skipif, $tested, $ini_settings);
+-        if (count($res) != 2) {
++        if ($res == 'SKIPPED' || count($res) != 2) {
+             return $res;
+         }
+         $info = $res['info'];

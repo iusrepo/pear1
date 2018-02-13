@@ -27,7 +27,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.5
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -47,6 +47,9 @@ Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 Source25: http://pear.php.net/get/PEAR_Manpages-%{manpages}.tgz
+
+# https://github.com/pear/pear-core/pull/71
+Patch0:   https://patch-diff.githubusercontent.com/raw/pear/pear-core/pull/71.patch
 
 BuildArch: noarch
 BuildRequires: php(language) > 5.4
@@ -212,7 +215,7 @@ install -m 644 -D macros.pear \
 
 # apply patches on installed PEAR tree
 pushd %{buildroot}%{peardir}
-: no patch \\o/
+patch --no-backup --fuzz 0 -p1 < %{PATCH0}
 popd
 
 # Why this file here ?
@@ -324,6 +327,10 @@ fi
 
 
 %changelog
+* Tue Feb 13 2018 Remi Collet <remi@remirepo.net> - 1:1.10.5-6
+- add patch for PHP 7.2 from
+  https://github.com/pear/pear-core/pull/71
+
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.10.5-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
