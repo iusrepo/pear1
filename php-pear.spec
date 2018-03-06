@@ -27,7 +27,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.5
-Release: 6%{?dist}
+Release: 7%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -61,7 +61,9 @@ BuildRequires: php-devel
 %if %{with_tests}
 BuildRequires:  %{_bindir}/phpunit
 %endif
+%if 0%{?fedora}
 BuildRequires:  php-fedora-autoloader-devel
+%endif
 
 Provides: php-pear(Console_Getopt) = %{getoptver}
 Provides: php-pear(Archive_Tar) = %{arctarver}
@@ -71,15 +73,17 @@ Provides: php-pear(XML_Util) = %{xmlutil}
 Provides: php-pear(PEAR_Manpages) = %{manpages}
 
 Provides: php-composer(pear/console_getopt) = %{getoptver}
-Provides: php-autoloader(pear/console_getopt) = %{getoptver}
 Provides: php-composer(pear/archive_tar) = %{arctarver}
-Provides: php-autoloader(pear/archive_tar) = %{arctarver}
 Provides: php-composer(pear/pear-core-minimal) = %{version}
-Provides: php-autoloader(pear/pear-core-minimal) = %{version}
 Provides: php-composer(pear/structures_graph) = %{structver}
-Provides: php-autoloader(pear/structures_graph) = %{structver}
 Provides: php-composer(pear/xml_util) = %{xmlutil}
+%if 0%{?fedora}
+Provides: php-autoloader(pear/console_getopt) = %{getoptver}
+Provides: php-autoloader(pear/archive_tar) = %{arctarver}
+Provides: php-autoloader(pear/pear-core-minimal) = %{version}
+Provides: php-autoloader(pear/structures_graph) = %{structver}
 Provides: php-autoloader(pear/xml_util) = %{xmlutil}
+%endif
 
 # Archive_Tar requires 5.2
 # XML_Util, Structures_Graph require 5.3
@@ -103,7 +107,9 @@ Requires:  php-bz2
 # optional: overload and xdebug
 # for /var/www/html ownership
 Requires: httpd-filesystem
+%if 0%{?fedora}
 Requires: php-composer(fedora/autoloader)
+%endif
 
 
 %description
@@ -136,6 +142,7 @@ sed -e 's:@BINDIR@:%{_bindir}:' \
 
 
 %build
+%if 0%{?fedora}
 # Create per package autoloader
 phpab --template fedora \
       --output PEAR/autoload.php\
@@ -159,6 +166,7 @@ mkdir XML/Util
 phpab --template fedora \
       --output XML/Util/autoload.php \
       XML
+%endif
 
 
 %install
@@ -224,10 +232,12 @@ rm -rf %{buildroot}/.depdb* %{buildroot}/.lock %{buildroot}/.channels %{buildroo
 # Need for re-registrying XML_Util
 install -m 644 *.xml %{buildroot}%{_localstatedir}/lib/pear/pkgxml
 
+%if 0%{?fedora}
 # install autoloaders
 for i in PEAR/autoload.php Structures/Graph/autoload.php Archive/Tar/autoload.php Console/Getopt/autoload.php XML/Util/autoload.php
 do install -Dpm 644 $i %{buildroot}%{peardir}/$i
 done
+%endif
 
 
 %check
@@ -327,6 +337,9 @@ fi
 
 
 %changelog
+* Tue Mar  6 2018 Remi Collet <remi@remirepo.net> - 1:1.10.5-7
+- enable autoloader only in Fedora
+
 * Tue Feb 13 2018 Remi Collet <remi@remirepo.net> - 1:1.10.5-6
 - add patch for PHP 7.2 from
   https://github.com/pear/pear-core/pull/71
