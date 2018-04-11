@@ -27,7 +27,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.5
-Release: 7%{?dist}
+Release: 8%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -55,7 +55,7 @@ BuildArch: noarch
 BuildRequires: php(language) > 5.4
 BuildRequires: php-cli
 BuildRequires: php-xml
-BuildRequires: gnupg
+BuildRequires: %{_bindir}/gpg
 # For pecl_xmldir macro
 BuildRequires: php-devel
 %if %{with_tests}
@@ -337,6 +337,9 @@ fi
 
 
 %changelog
+* Wed Apr 11 2018 Remi Collet <remi@remirepo.net> - 1:1.10.5-8
+- require /usr/bin/gpg instead of gnupg
+
 * Tue Mar  6 2018 Remi Collet <remi@remirepo.net> - 1:1.10.5-7
 - enable autoloader only in Fedora
 
