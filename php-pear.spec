@@ -26,7 +26,7 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
-Version: 1.10.6
+Version: 1.10.7
 Release: 1%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
@@ -334,6 +334,9 @@ fi
 
 
 %changelog
+* Thu Dec  6 2018 Remi Collet <remi@remirepo.net> - 1:1.10.7-1
+- update PEAR to 1.10.7
+
 * Thu Aug 23 2018 Remi Collet <remi@remirepo.net> - 1:1.10.6-1
 - update PEAR to 1.10.6
 
