@@ -9,7 +9,7 @@
 %global metadir %{_localstatedir}/lib/pear
 
 %global getoptver 1.4.1
-%global arctarver 1.4.3
+%global arctarver 1.4.4
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.1.1
@@ -27,7 +27,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.7
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -47,6 +47,8 @@ Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 Source25: http://pear.php.net/get/PEAR_Manpages-%{manpages}.tgz
+
+Patch0:   https://patch-diff.githubusercontent.com/raw/pear/pear-core/pull/83.patch
 
 BuildArch: noarch
 BuildRequires: php(language) > 5.4
@@ -220,7 +222,7 @@ install -m 644 -D macros.pear \
 
 # apply patches on installed PEAR tree
 pushd %{buildroot}%{peardir}
-: no patch
+patch -p1 <%{PATCH0}
 popd
 
 # Why this file here ?
@@ -334,6 +336,11 @@ fi
 
 
 %changelog
+* Fri Dec 21 2018 Remi Collet <remi@remirepo.net> - 1:1.10.7-3
+- update Archive_Tar to 1.4.4
+- drop PHP 7.2 deprecated option, patch from
+  https://github.com/pear/pear-core/pull/83
+
 * Thu Dec  6 2018 Remi Collet <remi@remirepo.net> - 1:1.10.7-1
 - update PEAR to 1.10.7
 
