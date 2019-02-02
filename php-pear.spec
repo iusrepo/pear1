@@ -27,7 +27,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: php-pear
 Version: 1.10.7
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -335,6 +335,9 @@ fi
 
 
 %changelog
+* Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1:1.10.7-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Thu Jan  3 2019 Remi Collet <remi@remirepo.net> - 1:1.10.7-3
 - update Archive_Tar to 1.4.5
 
