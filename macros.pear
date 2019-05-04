@@ -24,13 +24,13 @@
 %pecl_datadir %(%{__pecl} config-get data_dir 2> /dev/null || echo undefined)
 
 #
-# Define XML directories to store PEAR package registration information:
-# pecl_xmldir is now defined in macros.php (from php-devel)
+# Define XML directories to store package registration information:
 #
 %pear_xmldir @LIBDIR@/pear/pkgxml
+%pecl_xmldir @LIBDIR@/pear/pkgxml
 
 #
-# Define noop macros for old scriplets used in php-pecl-* spec files:
+# Define macros to be used in scriplets for php-pecl-* spec files:
 #
-%pecl_install   :
-%pecl_uninstall :
+%pecl_install %{__pecl} install --nodeps --soft --force --register-only --nobuild
+%pecl_uninstall %{__pecl} uninstall --nodeps --ignore-errors --register-only

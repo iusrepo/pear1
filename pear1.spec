@@ -1,3 +1,5 @@
+# IUS spec file for pear1, forked from
+#
 # Fedora spec file for php-pear
 #
 # License: MIT
@@ -20,14 +22,10 @@
 # Can't be run in mock / koji because PEAR is the first package
 %global with_tests 0%{?_with_tests:1}
 
-%global macrosdir %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
-
-%{!?pecl_xmldir: %global pecl_xmldir %{_sharedstatedir}/php/peclxml}
-
 Summary: PHP Extension and Application Repository framework
-Name: php-pear
+Name: pear1
 Version: 1.10.9
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -52,8 +50,6 @@ BuildRequires: php(language) > 5.4
 BuildRequires: php-cli
 BuildRequires: php-xml
 BuildRequires: %{_bindir}/gpg
-# For pecl_xmldir macro
-BuildRequires: php-devel
 %if %{with_tests}
 BuildRequires:  %{_bindir}/phpunit
 %endif
@@ -101,11 +97,19 @@ Requires:  php-bz2
 # Structures_Graph: none
 # XML_Util: pcre
 # optional: overload and xdebug
-# for /var/www/html ownership
-Requires: httpd-filesystem
 %if 0%{?fedora}
 Requires: php-composer(fedora/autoloader)
 %endif
+
+# rename from pear1u
+Obsoletes: pear1u < 1:1.10.5-2
+Provides:  pear1u = %{epoch}:%{version}-%{release}
+
+# safe replacement
+Provides:  pear = %{epoch}:%{version}-%{release}
+Conflicts: pear < %{epoch}:%{version}-%{release}
+Provides:  php-pear = %{epoch}:%{version}-%{release}
+Conflicts: php-pear < %{epoch}:%{version}-%{release}
 
 
 %description
@@ -215,7 +219,7 @@ install -m 755 %{SOURCE12} %{buildroot}%{_bindir}/peardev
 
 
 install -m 644 -D macros.pear \
-           %{buildroot}%{macrosdir}/macros.pear
+           %{buildroot}%{_rpmmacrodir}/macros.pear
 
 # apply patches on installed PEAR tree
 pushd %{buildroot}%{peardir}
@@ -276,28 +280,6 @@ exit $ret
 echo 'Test suite disabled (missing "--with tests" option)'
 %endif
 
-# Register newly installed PECL packages
-%transfiletriggerin -- %{pecl_xmldir}
-while read file; do
-  %{_bindir}/pecl install --nodeps --soft --force --register-only --nobuild "$file" >/dev/null || :
-done
-
-# Unregister to be removed PECL packages
-# Reading the xml file to retrieve channel and package name
-%transfiletriggerun -- %{pecl_xmldir}
-%{_bindir}/php -r '
-while ($file=fgets(STDIN)) {
-  $file = trim($file);
-  $xml = simplexml_load_file($file);
-  if (isset($xml->channel) &&  isset($xml->name)) {
-    printf("%s/%s\n", $xml->channel, $xml->name);
-  } else {
-    fputs(STDERR, "Bad pecl package file ($file)\n");
-  }
-}' | while read  name; do
-  %{_bindir}/pecl uninstall --nodeps --ignore-errors --register-only "$name" >/dev/null || :
-done
-
 
 %postun
 if [ $1 -eq 0 -a -d %{metadir}/.registry ] ; then
@@ -317,7 +299,7 @@ fi
 %{metadir}/pkgxml
 %{_bindir}/*
 %config(noreplace) %{_sysconfdir}/pear.conf
-%{macrosdir}/macros.pear
+%{_rpmmacrodir}/macros.pear
 %dir %{_localstatedir}/cache/php-pear
 %dir %{_sysconfdir}/pear
 %license LICENSE*
@@ -333,6 +315,9 @@ fi
 
 
 %changelog
+* Sat May 04 2019 Carl George <carl@george.computer> - 1:1.10.9-3
+- Port from Fedora (php-pear) to IUS (pear1)
+
 * Mon Apr  8 2019 Remi Collet <remi@remirepo.net> - 1:1.10.9-2
 - update Archive_Tar to 1.4.7
 
