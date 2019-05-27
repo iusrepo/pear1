@@ -7,13 +7,13 @@ task:
   name: el$RELEASEVER
   container:
     image: centos:$RELEASEVER
-  macros_script:
-    - cat > $HOME/.rpmmacros << EOF
-    - "%_sourcedir $PWD"
-    - "%_specdir $PWD"
-    - "%dist .el$RELEASEVER.ius"
-    - "%vendor IUS"
-    - EOF
+  macros_script: |
+    cat > $HOME/.rpmmacros << EOF
+    %_sourcedir $PWD
+    %_specdir $PWD
+    %dist .el$RELEASEVER.ius
+    %vendor IUS
+    EOF
   epel_script:      yum --assumeyes install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E %rhel).noarch.rpm
   toolchain_script: yum --assumeyes install yum-utils rpmdevtools @buildsys-build
   ius_script:       yum --assumeyes install https://repo.ius.io/ius-release-el$(rpm -E %rhel).rpm
