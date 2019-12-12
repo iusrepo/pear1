@@ -10,12 +10,12 @@
 %global peardir %{_datadir}/pear
 %global metadir %{_localstatedir}/lib/pear
 
-%global getoptver 1.4.2
-%global arctarver 1.4.7
+%global getoptver 1.4.3
+%global arctarver 1.4.9
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.1.1
-%global xmlutil   1.4.3
+%global xmlutil   1.4.4
 %global manpages  1.10.0
 
 # Tests are only run with rpmbuild --with tests
@@ -24,8 +24,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: pear1
-Version: 1.10.9
-Release: 3%{?dist}
+Version: 1.10.10
+Release: 1%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -44,6 +44,9 @@ Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 Source25: http://pear.php.net/get/PEAR_Manpages-%{manpages}.tgz
+
+# https://github.com/pear/XML_Util/pull/12
+Patch0:   12.patch
 
 BuildArch: noarch
 BuildRequires: php(language) > 5.4
@@ -223,7 +226,7 @@ install -m 644 -D macros.pear \
 
 # apply patches on installed PEAR tree
 pushd %{buildroot}%{peardir}
-: no patch
+patch -p1 < %{PATCH0}
 popd
 
 # Why this file here ?
@@ -262,10 +265,9 @@ phpunit \
    AllTests || ret=1
 
 cd %{buildroot}%{_datadir}/tests/pear/XML_Util/tests
-%{_bindir}/php \
-   %{buildroot}/usr/share/pear/pearcmd.php \
-   run-tests \
-   | tee $LOG
+phpunit \
+   --bootstrap=/usr/share/pear/XML/Util/autoload.php \
+   --test-suffix .php . || ret=1
 
 cd %{buildroot}%{_datadir}/tests/pear/Console_Getopt/tests
 %{_bindir}/php \
@@ -315,6 +317,14 @@ fi
 
 
 %changelog
+* Thu Dec 12 2019 Matt Linscott <matt.linscott@gmail.com> - 1:1.10.10-1
+- Latest upstream
+- Import Fedora changes for bundled libraries:
+  - Update XML_Util to 1.4.4
+  - Add patch0 for XML_Util and PHP 7.4
+  - Update Archive_Tar to 1.4.9
+  - Update Console_Getopt to 1.4.3
+
 * Sat May 04 2019 Carl George <carl@george.computer> - 1:1.10.9-3
 - Port from Fedora (php-pear) to IUS (pear1)
 

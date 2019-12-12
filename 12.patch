@@ -1,0 +1,24 @@
+From e2c9854408bc0b45206336060e28603de3371c99 Mon Sep 17 00:00:00 2001
+From: Remi Collet <remi@remirepo.net>
+Date: Thu, 12 Dec 2019 14:17:38 +0100
+Subject: [PATCH] fix Trying to access array offset on value of type int
+
+---
+ XML/Util.php               |  2 +-
+ tests/IsValidNameTests.php | 24 ++++++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/XML/Util.php b/XML/Util.php
+index df37e07..1ba45ac 100644
+--- a/XML/Util.php
++++ b/XML/Util.php
+@@ -918,7 +918,7 @@ public static function splitQualifiedName($qname, $defaultNs = null)
+     public static function isValidName($string)
+     {
+         // check for invalid chars
+-        if (!preg_match('/^[[:alpha:]_]\\z/', $string[0])) {
++        if (!is_string($string) || !strlen($string) || !preg_match('/^[[:alpha:]_]\\z/', $string[0])) {
+             return XML_Util::raiseError(
+                 'XML names may only start with letter or underscore',
+                 XML_UTIL_ERROR_INVALID_START
+
