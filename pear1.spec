@@ -15,7 +15,7 @@
 # https://pear.php.net/bugs/bug.php?id=19367
 # Structures_Graph 1.0.4 - incorrect FSF address
 %global structver 1.1.1
-%global xmlutil   1.4.4
+%global xmlutil   1.4.5
 %global manpages  1.10.0
 
 # Tests are only run with rpmbuild --with tests
@@ -24,7 +24,7 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: pear1
-Version: 1.10.10
+Version: 1.10.12
 Release: 1%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
@@ -44,9 +44,6 @@ Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 Source25: http://pear.php.net/get/PEAR_Manpages-%{manpages}.tgz
-
-# https://github.com/pear/XML_Util/pull/12
-Patch0:   12.patch
 
 BuildArch: noarch
 BuildRequires: php(language) > 5.4
@@ -226,7 +223,7 @@ install -m 644 -D macros.pear \
 
 # apply patches on installed PEAR tree
 pushd %{buildroot}%{peardir}
-patch -p1 < %{PATCH0}
+: no patch
 popd
 
 # Why this file here ?
@@ -317,6 +314,11 @@ fi
 
 
 %changelog
+* Mon Aug 03 2020 Carl George <carl@george.computer> - 1:1.10.12-1
+- Latest upstream
+- Import Fedora changes for bundled libraries:
+  - Update XML_Util to 1.4.5
+
 * Thu Dec 12 2019 Matt Linscott <matt.linscott@gmail.com> - 1:1.10.10-1
 - Latest upstream
 - Import Fedora changes for bundled libraries:
