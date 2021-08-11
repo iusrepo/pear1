@@ -24,8 +24,8 @@
 
 Summary: PHP Extension and Application Repository framework
 Name: pear1
-Version: 1.10.12
-Release: 2%{?dist}
+Version: 1.10.13
+Release: 1%{?dist}
 Epoch: 1
 # PEAR, PEAR_Manpages, Archive_Tar, XML_Util, Console_Getopt are BSD
 # Structures_Graph is LGPLv3+
@@ -314,6 +314,9 @@ fi
 
 
 %changelog
+* Wed Aug 11 2021 Remi Collet <remi@remirepo.net> - 1:1.10.13-1
+- update to 1.10.13
+
 * Wed Jul 21 2021 Remi Collet <remi@remirepo.net> - 1:1.10.12-2
 - update Archive_Tar to 1.4.14
 
